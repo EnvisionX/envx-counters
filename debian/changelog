@@ -1,3 +1,9 @@
+proffero-counters (0.2.0) unstable; urgency=low
+
+  * Add command line interface tool.
+
+ -- Aleksey Morarash <aleksey.morarash@proffero.com>  Fri, 29 Aug 2014 20:42:00 +0300
+
 proffero-counters (0.1.0) unstable; urgency=low
 
   * Initial release.

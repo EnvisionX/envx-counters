@@ -23,3 +23,9 @@ Package: proffero-counters-doc
 Architecture: all
 Description: Counters storage interface developer documentation.
  Contains generated HTML documentation for the interface source code.
+
+Package: proffero-counters-cli
+Architecture: all
+Depends: python
+Description: Proffero non-persistent counters storage CLI
+ Command line tool to poll Proffero non-persistent counters storage.
