@@ -1,0 +1,26 @@
+%%% @author Aleksey Morarash <aleksey.morarash@proffero.com>
+%%% @since 29 Aug 2014
+%%% @copyright 2014, Proffero <info@proffero.com>
+%%% @doc proffero_counters application resource file
+
+{application, proffero_counters,
+ [
+  {description,  "Non-persistent counters storage interface"},
+  {vsn,          "{{VERSION}}"},
+  {modules,      [proffero_counters,
+                  proffero_counters_app,
+                  proffero_counters_sup,
+                  proffero_counters_srv,
+                  proffero_counters_ext_api,
+                  proffero_counters_ext_api_tcp_connection
+                 ]},
+  {registered,   [proffero_counters_sup,
+                  proffero_counters_srv,
+                  proffero_counters_ext_api
+                 ]},
+  {applications, [proffero_lib,
+                  proffero_config,
+                  proffero_logger
+                 ]},
+  {mod,          {proffero_counters_app, []}}
+ ]}.

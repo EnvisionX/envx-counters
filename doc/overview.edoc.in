@@ -1,0 +1,15 @@
+@author Aleksey Morarash <aleksey.morarash@proffero.com>
+@copyright 2014 Proffero <info@proffero.com>
+@version {{VERSION}}
+@title Welcome to Proffero Non-persistent counters interface.
+@doc == Contents ==
+
+<ol>
+ <li>{@section Summary}</li>
+</ol>
+
+== Summary ==
+
+Provides an API for target Erlang application to update various
+counters and an API for external processes to fetch current values
+for the counters.
