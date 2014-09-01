@@ -35,9 +35,9 @@ def usage():
         '\t--host Hostname       set hostname. Default is localhost;\n'
         '\t--port PortNumber     set port number. Default is 8907;\n'
         '\t--udp                 use UDP instead of TCP;\n'
-        '\t--pipe                only for \'get\' command in TCP mode.\n'
-        '\t                      continously print the counter values\n'
-        '\t                      to the stdout.\n' % (cmd, cmd, cmd))
+        '\t--pipe                only for \'get\' command.\n'
+        '\t                      Continously read and print the counter\n'
+        '\t                      values to the stdout.\n' % (cmd, cmd, cmd))
     sys.exit(1)
 
 
