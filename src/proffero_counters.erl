@@ -77,25 +77,57 @@ list() ->
 -define(c1, [a, b, c]).
 -define(c2, [d, e, f]).
 
+-define(CLI, "clients/cli/proffero-counters-cli.py").
+-define(CLI_UDP, ?CLI " --udp").
+
 main_test_() ->
     proffero_lib_eunit:fixture_nodes(
       [{?slave, "-pa ebin"}],
       {inorder,
        [?_assertMatch(
            ok, ?slave_apply(proffero_lib_application, start, [?MODULE])),
-        ?_assertMatch([], ?slave_apply(?MODULE, list, [])),
-        ?_assertMatch(0,  ?slave_apply(?MODULE, get, [?c1])),
-        ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c1])),
-        ?_assertMatch(1,  ?slave_apply(?MODULE, get, [?c1])),
-        ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c1, 2])),
-        ?_assertMatch(3,  ?slave_apply(?MODULE, get, [?c1])),
-        ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c1, -4])),
-        ?_assertMatch(-1, ?slave_apply(?MODULE, get, [?c1])),
-        ?_assertMatch([?c1], ?slave_apply(?MODULE, list, [])),
-        ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c2, -100])),
-        ?_assertMatch(-100, ?slave_apply(?MODULE, get, [?c2])),
-        ?_assertMatch(
-           [?c1, ?c2], lists:sort(?slave_apply(?MODULE, list, [])))
+        {"Erlang interface test",
+         [?_assertMatch([], ?slave_apply(?MODULE, list, [])),
+          ?_assertMatch(0,  ?slave_apply(?MODULE, get, [?c1])),
+          ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c1])),
+          ?_assertMatch(1,  ?slave_apply(?MODULE, get, [?c1])),
+          ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c1, 2])),
+          ?_assertMatch(3,  ?slave_apply(?MODULE, get, [?c1])),
+          ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c1, -4])),
+          ?_assertMatch(-1, ?slave_apply(?MODULE, get, [?c1])),
+          ?_assertMatch([?c1], ?slave_apply(?MODULE, list, [])),
+          ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c2, -100])),
+          ?_assertMatch(-100, ?slave_apply(?MODULE, get, [?c2])),
+          ?_assertMatch(
+             [?c1, ?c2], lists:sort(?slave_apply(?MODULE, list, [])))]},
+        {"CLI tool TCP test",
+         [?_assertMatch(
+             "a.b.c\nd.e.f\n",
+             os:cmd(?CLI " list | sort")),
+          ?_assertMatch(
+             "a.b.c -1\n",
+             os:cmd(?CLI " get a.b.c")),
+          ?_assertMatch(
+             "d.e.f -100\n",
+             os:cmd(?CLI " get d.e.f")),
+          ?_assertMatch(
+             "a.b.c -1\nd.e.f -100\n",
+             os:cmd(?CLI " get a.b.c d.e.f"))
+         ]},
+        {"CLI tool UDP test",
+         [?_assertMatch(
+             "a.b.c\nd.e.f\n",
+             os:cmd(?CLI_UDP " list | sort")),
+          ?_assertMatch(
+             "a.b.c -1\n",
+             os:cmd(?CLI_UDP " get a.b.c")),
+          ?_assertMatch(
+             "d.e.f -100\n",
+             os:cmd(?CLI_UDP " get d.e.f")),
+          ?_assertMatch(
+             "a.b.c -1\nd.e.f -100\n",
+             os:cmd(?CLI_UDP " get a.b.c d.e.f"))
+         ]}
        ]}).
 
 -endif.
