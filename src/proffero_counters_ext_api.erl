@@ -215,7 +215,14 @@ decode_name(String) ->
 -spec encode_name(CounterName :: proffero_counters:name()) ->
                          EncodedCounterName :: iolist().
 encode_name(CounterName) ->
-    string:join(lists:map(fun atom_to_list/1, CounterName), ".").
+    string:join(lists:map(fun encode_name_elem/1, CounterName), ".").
+
+%% @doc Encode counter name element.
+-spec encode_name_elem(atom() | binary()) -> string().
+encode_name_elem(Binary) when is_binary(Binary) ->
+    binary_to_list(Binary);
+encode_name_elem(Atom) when is_atom(Atom) ->
+    atom_to_list(Atom).
 
 %% @doc Schedule sockets check.
 -spec schedule_check_sockets(TimeMillis :: non_neg_integer()) -> ok.

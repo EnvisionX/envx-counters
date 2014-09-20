@@ -1,3 +1,9 @@
+proffero-counters (0.3.0) unstable; urgency=low
+
+  * Extend counter ID with binaries.
+
+ -- Aleksey Morarash <aleksey.morarash@proffero.com>  Sat, 20 Sep 2014 15:58:00 +0300
+
 proffero-counters (0.2.0) unstable; urgency=low
 
   * Add command line interface tool.

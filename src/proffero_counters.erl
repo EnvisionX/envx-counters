@@ -29,7 +29,7 @@
    ]).
 
 -type name() ::
-        [atom(), ...]. %% nonempty list of atoms
+        [atom() | binary(), ...]. %% nonempty list of atoms or binaries
 
 -type value() :: integer().
 
