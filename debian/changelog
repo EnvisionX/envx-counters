@@ -1,3 +1,9 @@
+proffero-counters (0.4.0) unstable; urgency=low
+
+  * Extend API with gauges (set/2 fun).
+
+ -- Aleksey Morarash <aleksey.morarash@proffero.com>  Sun, 21 Sep 2014 17:00:00 +0300
+
 proffero-counters (0.3.0) unstable; urgency=low
 
   * Extend counter ID with binaries.

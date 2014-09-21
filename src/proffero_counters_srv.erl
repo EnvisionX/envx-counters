@@ -13,6 +13,7 @@
 -export(
    [start_link/0,
     increment/2,
+    set/2,
     get/1,
     list/0
    ]).
@@ -28,6 +29,7 @@
 %% ----------------------------------------------------------------------
 
 -define(INCREMENT(CounterName, Delta), {'*increment*', CounterName, Delta}).
+-define(SET(CounterName, Value), {'*set*', CounterName, Value}).
 
 %% ----------------------------------------------------------------------
 %% API functions
@@ -47,6 +49,13 @@ start_link() ->
                 Delta :: proffero_counters:delta()) -> ok.
 increment(CounterName, Delta) ->
     _Sent = ?MODULE ! ?INCREMENT(CounterName, Delta),
+    ok.
+
+%% @doc Set a new value of the counter.
+-spec set(CounterName :: proffero_counters:name(),
+          Value :: proffero_counters:value()) -> ok.
+set(CounterName, Value) ->
+    _Sent = ?MODULE ! ?SET(CounterName, Value),
     ok.
 
 %% @doc Fetch counter value.
@@ -95,6 +104,9 @@ handle_info(?INCREMENT(CounterName, Delta), State) ->
                 %% no such counter present. Create it
                 ets:insert(?MODULE, {CounterName, Delta})
         end,
+    {noreply, State};
+handle_info(?SET(CounterName, Value), State) ->
+    true = ets:insert(?MODULE, {CounterName, Value}),
     {noreply, State};
 handle_info(_Request, State) ->
     {noreply, State}.

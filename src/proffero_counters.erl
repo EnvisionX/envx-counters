@@ -11,6 +11,7 @@
 -export(
    [increment/1,
     increment/2,
+    set/2,
     get/1,
     list/0
    ]).
@@ -51,6 +52,11 @@ increment(CounterName) ->
 increment(CounterName, Delta) ->
     proffero_counters_srv:increment(CounterName, Delta).
 
+%% @doc Set a new value of the counter.
+-spec set(CounterName :: name(), Value :: value()) -> ok.
+set(CounterName, Value) ->
+    proffero_counters_srv:set(CounterName, Value).
+
 %% @doc Fetch counter value.
 -spec get(CounterName :: name()) -> Value :: value().
 get(CounterName) ->
@@ -76,6 +82,7 @@ list() ->
 
 -define(c1, [a, b, c]).
 -define(c2, [d, e, f]).
+-define(c3, [g, h, j]).
 
 -define(CLI, "clients/cli/proffero-counters-cli.py").
 -define(CLI_UDP, ?CLI " --udp").
@@ -99,10 +106,17 @@ main_test_() ->
           ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c2, -100])),
           ?_assertMatch(-100, ?slave_apply(?MODULE, get, [?c2])),
           ?_assertMatch(
-             [?c1, ?c2], lists:sort(?slave_apply(?MODULE, list, [])))]},
+             [?c1, ?c2], lists:sort(?slave_apply(?MODULE, list, []))),
+          ?_assertMatch(ok, ?slave_apply(?MODULE, set, [?c3, 1])),
+          ?_assertMatch(1, ?slave_apply(?MODULE, get, [?c3])),
+          ?_assertMatch(ok, ?slave_apply(?MODULE, set, [?c3, 5])),
+          ?_assertMatch(5, ?slave_apply(?MODULE, get, [?c3])),
+          ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c3, 5])),
+          ?_assertMatch(10, ?slave_apply(?MODULE, get, [?c3]))
+         ]},
         {"CLI tool TCP test",
          [?_assertMatch(
-             "a.b.c\nd.e.f\n",
+             "a.b.c\nd.e.f\ng.h.j\n",
              os:cmd(?CLI " list | sort")),
           ?_assertMatch(
              "a.b.c -1\n",
@@ -116,7 +130,7 @@ main_test_() ->
          ]},
         {"CLI tool UDP test",
          [?_assertMatch(
-             "a.b.c\nd.e.f\n",
+             "a.b.c\nd.e.f\ng.h.j\n",
              os:cmd(?CLI_UDP " list | sort")),
           ?_assertMatch(
              "a.b.c -1\n",
