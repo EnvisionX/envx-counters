@@ -1,17 +1,17 @@
 %%% @doc
 %%% Erlang application behaviour module.
 
-%%% @author Aleksey Morarash <aleksey.morarash@proffero.com>
+%%% @author Aleksey Morarash <aleksey.morarash@envisionx.co>
 %%% @since 29 Aug 2014
-%%% @copyright 2014, Proffero <info@proffero.com>
+%%% @copyright 2014, EnvisionX <info@envisionx.co>
 
--module(proffero_counters_app).
+-module(envx_counters_app).
 
 -behaviour(application).
 
 -export([start/2, start_phase/3, prep_stop/1, stop/1, config_change/3]).
 
--include("proffero_counters.hrl").
+-include("envx_counters.hrl").
 
 %% ----------------------------------------------------------------------
 %% API: 'application' behaviour callback functions
@@ -22,7 +22,7 @@
             StartArgs :: any()) ->
                    {ok, Pid :: pid()} | {error, Reason :: any()}.
 start(_StartType, _StartArgs) ->
-    proffero_counters_sup:start_link().
+    envx_counters_sup:start_link().
 
 %% @hidden
 -spec start_phase(Phase :: atom(), StartType :: application:start_type(),

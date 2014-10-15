@@ -1,11 +1,11 @@
 %%% @doc
 %%% Non-persistent counters storage interface - main interface module.
 
-%%% @author Aleksey Morarash <aleksey.morarash@proffero.com>
+%%% @author Aleksey Morarash <aleksey.morarash@envisionx.co>
 %%% @since 29 Aug 2014
-%%% @copyright 2014, Proffero <info@proffero.com>
+%%% @copyright 2014, EnvisionX <info@envisionx.co>
 
--module(proffero_counters).
+-module(envx_counters).
 
 %% API exports
 -export(
@@ -16,8 +16,8 @@
     list/0
    ]).
 
--include("proffero_counters.hrl").
--include("proffero_counters_private.hrl").
+-include("envx_counters.hrl").
+-include("envx_counters_private.hrl").
 
 %% --------------------------------------------------------------------
 %% Type definitions
@@ -50,22 +50,22 @@ increment(CounterName) ->
 %% creating it if it is not exists yet.
 -spec increment(CounterName :: name(), Delta :: delta()) -> ok.
 increment(CounterName, Delta) ->
-    proffero_counters_srv:increment(CounterName, Delta).
+    envx_counters_srv:increment(CounterName, Delta).
 
 %% @doc Set a new value of the counter.
 -spec set(CounterName :: name(), Value :: value()) -> ok.
 set(CounterName, Value) ->
-    proffero_counters_srv:set(CounterName, Value).
+    envx_counters_srv:set(CounterName, Value).
 
 %% @doc Fetch counter value.
 -spec get(CounterName :: name()) -> Value :: value().
 get(CounterName) ->
-    proffero_counters_srv:get(CounterName).
+    envx_counters_srv:get(CounterName).
 
 %% @doc Return list of all counters available.
 -spec list() -> [name()].
 list() ->
-    proffero_counters_srv:list().
+    envx_counters_srv:list().
 
 %% --------------------------------------------------------------------
 %% Internal functions
@@ -84,15 +84,15 @@ list() ->
 -define(c2, [d, e, f]).
 -define(c3, [g, h, j]).
 
--define(CLI, "clients/cli/proffero-counters-cli.py").
+-define(CLI, "clients/cli/envx-counters-cli.py").
 -define(CLI_UDP, ?CLI " --udp").
 
 main_test_() ->
-    proffero_lib_eunit:fixture_nodes(
+    envx_lib_eunit:fixture_nodes(
       [{?slave, "-pa ebin"}],
       {inorder,
        [?_assertMatch(
-           ok, ?slave_apply(proffero_lib_application, start, [?MODULE])),
+           ok, ?slave_apply(envx_lib_application, start, [?MODULE])),
         {"Erlang interface test",
          [?_assertMatch([], ?slave_apply(?MODULE, list, [])),
           ?_assertMatch(0,  ?slave_apply(?MODULE, get, [?c1])),

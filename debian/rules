@@ -21,16 +21,16 @@ override_dh_auto_test:
 
 NAME = counters
 VERSION = $(shell cat version)
-DESTDIR = debian/proffero-$(NAME)
-DOC_DESTDIR = debian/proffero-$(NAME)-doc
-CLI_DESTDIR = debian/proffero-$(NAME)-cli
-ERL_APP_DIR = $(DESTDIR)/usr/lib/erlang/lib/proffero_$(NAME)-$(VERSION)
+DESTDIR = debian/envx-$(NAME)
+DOC_DESTDIR = debian/envx-$(NAME)-doc
+CLI_DESTDIR = debian/envx-$(NAME)-cli
+ERL_APP_DIR = $(DESTDIR)/usr/lib/erlang/lib/envx_$(NAME)-$(VERSION)
 override_dh_install:
 	install -m 755 -d $(ERL_APP_DIR)/ebin
 	install -m 644 ebin/*.app ebin/*.beam $(ERL_APP_DIR)/ebin
-	install -m 755 -d $(DOC_DESTDIR)/usr/share/doc/proffero-$(NAME)-doc
+	install -m 755 -d $(DOC_DESTDIR)/usr/share/doc/envx-$(NAME)-doc
 	install -m 644 doc/*.html doc/*.css doc/*.png \
-	    $(DOC_DESTDIR)/usr/share/doc/proffero-$(NAME)-doc
+	    $(DOC_DESTDIR)/usr/share/doc/envx-$(NAME)-doc
 	install -m 755 -d $(CLI_DESTDIR)/usr/bin
-	install -m 755 clients/cli/proffero-counters-cli.py \
-	    $(CLI_DESTDIR)/usr/bin/proffero-counters-cli
+	install -m 755 clients/cli/envx-counters-cli.py \
+	    $(CLI_DESTDIR)/usr/bin/envx-counters-cli

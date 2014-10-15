@@ -1,31 +1,31 @@
-Source: proffero-counters
+Source: envx-counters
 Section: non-free/misc
 Priority: extra
-Maintainer: Aleksey Morarash <aleksey.morarash@proffero.com>
+Maintainer: Aleksey Morarash <aleksey.morarash@envisionx.co>
 Build-Depends: debhelper (>= 8.0.0), erlang-base, erlang-dev, erlang-tools,
- erlang-edoc, erlang-eunit, erlang-dialyzer, proffero-erlang-logger-dev,
- proffero-erlang-lib
+ erlang-edoc, erlang-eunit, erlang-dialyzer, envx-erlang-logger-dev,
+ envx-erlang-lib
 Standards-Version: 3.9.3
-Homepage: https://github.com/Proffero/proffero-counters
-Vcs-Browser: https://github.com/Proffero/proffero-counters
-Vcs-Git: https://github.com/Proffero/proffero-counters.git
+Homepage: https://github.com/EnvisionX/envx-counters
+Vcs-Browser: https://github.com/EnvisionX/envx-counters
+Vcs-Git: https://github.com/EnvisionX/envx-counters.git
 
-Package: proffero-counters
+Package: envx-counters
 Architecture: all
-Depends: erlang-base, proffero-erlang-config, proffero-erlang-lib,
- proffero-erlang-logger
+Depends: erlang-base, envx-erlang-config, envx-erlang-lib,
+ envx-erlang-logger
 Description: Non-persistent counters storage interface
  Provides an API for target Erlang application to update various
  counters and an API for external processes to fetch current values
  for the counters.
 
-Package: proffero-counters-doc
+Package: envx-counters-doc
 Architecture: all
 Description: Counters storage interface developer documentation.
  Contains generated HTML documentation for the interface source code.
 
-Package: proffero-counters-cli
+Package: envx-counters-cli
 Architecture: all
 Depends: python
-Description: Proffero non-persistent counters storage CLI
- Command line tool to poll Proffero non-persistent counters storage.
+Description: EnvisionX non-persistent counters storage CLI
+ Command line tool to poll EnvisionX non-persistent counters storage.

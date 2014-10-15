@@ -1,0 +1,26 @@
+%%% @author Aleksey Morarash <aleksey.morarash@envisionx.co>
+%%% @since 29 Aug 2014
+%%% @copyright 2014, EnvisionX <info@envisionx.co>
+%%% @doc envx_counters application resource file
+
+{application, envx_counters,
+ [
+  {description,  "Non-persistent counters storage interface"},
+  {vsn,          "{{VERSION}}"},
+  {modules,      [envx_counters,
+                  envx_counters_app,
+                  envx_counters_sup,
+                  envx_counters_srv,
+                  envx_counters_ext_api,
+                  envx_counters_ext_api_tcp_connection
+                 ]},
+  {registered,   [envx_counters_sup,
+                  envx_counters_srv,
+                  envx_counters_ext_api
+                 ]},
+  {applications, [envx_lib,
+                  envx_config,
+                  envx_logger
+                 ]},
+  {mod,          {envx_counters_app, []}}
+ ]}.

@@ -1,18 +1,18 @@
 %%% @doc
 %%% API for external processes to fetch current values of the counters.
 
-%%% @author Aleksey Morarash <aleksey.morarash@proffero.com>
+%%% @author Aleksey Morarash <aleksey.morarash@envisionx.co>
 %%% @since 29 Aug 2014
-%%% @copyright 2014, Proffero <info@proffero.com>
+%%% @copyright 2014, EnvisionX <info@envisionx.co>
 
--module(proffero_counters_ext_api_tcp_connection).
+-module(envx_counters_ext_api_tcp_connection).
 
 %% API exports
 -export([start_link/1]).
 
--include("proffero_counters.hrl").
--include("proffero_counters_private.hrl").
--include_lib("proffero_logger/include/proffero_logger.hrl").
+-include("envx_counters.hrl").
+-include("envx_counters_private.hrl").
+-include_lib("envx_logger/include/envx_logger.hrl").
 
 -record(
    state,
@@ -30,7 +30,7 @@
 -spec start_link(Socket :: port()) -> ok.
 start_link(Socket) ->
     {ok, {Addr, Port}} = inet:peername(Socket),
-    LogID = proffero_lib_inet:socket_to_list(Addr, Port) ++ ">>",
+    LogID = envx_lib_inet:socket_to_list(Addr, Port) ++ ">>",
     ReadySignal = make_ref(),
     Pid =
         spawn_link(
@@ -80,11 +80,11 @@ loop(State) ->
             %% max read timeout elapsed - closing the connection
             ok;
         {ok, EncodedRequest} ->
-            case proffero_counters_ext_api:decode_request(EncodedRequest) of
+            case envx_counters_ext_api:decode_request(EncodedRequest) of
                 {ok, Request} ->
-                    Reply = proffero_counters_ext_api:process(Request),
+                    Reply = envx_counters_ext_api:process(Request),
                     EncodedReply =
-                        proffero_counters_ext_api:encode_reply(Reply),
+                        envx_counters_ext_api:encode_reply(Reply),
                     case gen_tcp:send(
                            State#state.socket, [EncodedReply, $\n]) of
                         ok ->

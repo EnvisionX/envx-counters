@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: proffero-counters
+Upstream-Name: envx-counters
 
 Files: *
-Copyright: 2014 Proffero <info@proffero.com>
+Copyright: 2014 EnvisionX <info@envisionx.co>
 License: Restricted
- Only for Proffero internal purposes.
+ Only for EnvisionX internal purposes.

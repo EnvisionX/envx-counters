@@ -1,11 +1,11 @@
 %%% @doc
 %%% Main application activity module.
 
-%%% @author Aleksey Morarash <aleksey.morarash@proffero.com>
+%%% @author Aleksey Morarash <aleksey.morarash@envisionx.co>
 %%% @since 29 Aug 2014
-%%% @copyright 2014, Proffero <info@proffero.com>
+%%% @copyright 2014, EnvisionX <info@envisionx.co>
 
--module(proffero_counters_srv).
+-module(envx_counters_srv).
 
 -behaviour(gen_server).
 
@@ -22,7 +22,7 @@
 -export([init/1, handle_call/3, handle_info/2, handle_cast/2,
          terminate/2, code_change/3]).
 
--include("proffero_counters.hrl").
+-include("envx_counters.hrl").
 
 %% ----------------------------------------------------------------------
 %% Internal signals
@@ -45,22 +45,22 @@ start_link() ->
 %% The implementation is based on direct message send instead of
 %% gen_server:cast/2 because it is faster: no monitors are created
 %% and removed during the operation.
--spec increment(CounterName :: proffero_counters:name(),
-                Delta :: proffero_counters:delta()) -> ok.
+-spec increment(CounterName :: envx_counters:name(),
+                Delta :: envx_counters:delta()) -> ok.
 increment(CounterName, Delta) ->
     _Sent = ?MODULE ! ?INCREMENT(CounterName, Delta),
     ok.
 
 %% @doc Set a new value of the counter.
--spec set(CounterName :: proffero_counters:name(),
-          Value :: proffero_counters:value()) -> ok.
+-spec set(CounterName :: envx_counters:name(),
+          Value :: envx_counters:value()) -> ok.
 set(CounterName, Value) ->
     _Sent = ?MODULE ! ?SET(CounterName, Value),
     ok.
 
 %% @doc Fetch counter value.
--spec get(CounterName :: proffero_counters:name()) ->
-                 Value :: proffero_counters:value().
+-spec get(CounterName :: envx_counters:name()) ->
+                 Value :: envx_counters:value().
 get(CounterName) ->
     case ets:lookup(?MODULE, CounterName) of
         [{CounterName, Value}] ->
@@ -70,7 +70,7 @@ get(CounterName) ->
     end.
 
 %% @doc Return list of all counters available.
--spec list() -> [proffero_counters:name()].
+-spec list() -> [envx_counters:name()].
 list() ->
     [Name || {Name, _Value} <- ets:tab2list(?MODULE)].
 

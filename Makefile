@@ -1,4 +1,4 @@
-APP = proffero_counters
+APP = envx_counters
 
 VERSION = $(shell cat version)
 

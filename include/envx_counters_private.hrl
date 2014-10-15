@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
-%%% File        : proffero_counters_private.hrl
-%%% Author      : Aleksey Morarash <aleksey.morarash@proffero.com>
-%%% Description : proffero_counters private definitions file
+%%% File        : envx_counters_private.hrl
+%%% Author      : Aleksey Morarash <aleksey.morarash@envisionx.co>
+%%% Description : envx_counters private definitions file
 %%% Created     : 29 Aug 2014
 %%%----------------------------------------------------------------------
 
@@ -11,8 +11,8 @@
 %% ----------------------------------------------------------------------
 %% Configuration keys
 
--define(CFG_TCP_BIND_PORT, [proffero_counters, tcp_bind_port]).
--define(CFG_UDP_BIND_PORT, [proffero_counters, udp_bind_port]).
+-define(CFG_TCP_BIND_PORT, [envx_counters, tcp_bind_port]).
+-define(CFG_UDP_BIND_PORT, [envx_counters, udp_bind_port]).
 
 %% ----------------------------------------------------------------------
 %% Default values for configuration keys

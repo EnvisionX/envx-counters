@@ -1,7 +1,7 @@
-@author Aleksey Morarash <aleksey.morarash@proffero.com>
-@copyright 2014 Proffero <info@proffero.com>
+@author Aleksey Morarash <aleksey.morarash@envisionx.co>
+@copyright 2014 EnvisionX <info@envisionx.co>
 @version {{VERSION}}
-@title Welcome to Proffero Non-persistent counters interface.
+@title Welcome to EnvisionX Non-persistent counters interface.
 @doc == Contents ==
 
 <ol>

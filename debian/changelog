@@ -1,23 +1,23 @@
-proffero-counters (0.4.0) unstable; urgency=low
+envx-counters (0.4.0) unstable; urgency=low
 
   * Extend API with gauges (set/2 fun).
 
- -- Aleksey Morarash <aleksey.morarash@proffero.com>  Sun, 21 Sep 2014 17:00:00 +0300
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Sun, 21 Sep 2014 17:00:00 +0300
 
-proffero-counters (0.3.0) unstable; urgency=low
+envx-counters (0.3.0) unstable; urgency=low
 
   * Extend counter ID with binaries.
 
- -- Aleksey Morarash <aleksey.morarash@proffero.com>  Sat, 20 Sep 2014 15:58:00 +0300
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Sat, 20 Sep 2014 15:58:00 +0300
 
-proffero-counters (0.2.0) unstable; urgency=low
+envx-counters (0.2.0) unstable; urgency=low
 
   * Add command line interface tool.
 
- -- Aleksey Morarash <aleksey.morarash@proffero.com>  Fri, 29 Aug 2014 20:42:00 +0300
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Fri, 29 Aug 2014 20:42:00 +0300
 
-proffero-counters (0.1.0) unstable; urgency=low
+envx-counters (0.1.0) unstable; urgency=low
 
   * Initial release.
 
- -- Aleksey Morarash <aleksey.morarash@proffero.com>  Fri, 29 Aug 2014 14:32:00 +0300
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Fri, 29 Aug 2014 14:32:00 +0300

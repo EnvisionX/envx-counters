@@ -1,17 +1,17 @@
 %%% @doc
 %%% Application main supervisor.
 
-%%% @author Aleksey Morarash <aleksey.morarash@proffero.com>
+%%% @author Aleksey Morarash <aleksey.morarash@envisionx.co>
 %%% @since 29 Aug 2014
-%%% @copyright 2014, Proffero <info@proffero.com>
+%%% @copyright 2014, EnvisionX <info@envisionx.co>
 
--module(proffero_counters_sup).
+-module(envx_counters_sup).
 
 -behaviour(supervisor).
 
 -export([start_link/0, init/1]).
 
--include("proffero_counters.hrl").
+-include("envx_counters.hrl").
 
 %% ----------------------------------------------------------------------
 %% API functions
@@ -35,12 +35,12 @@ init(_Args) ->
        {one_for_one, 5, 1},
        [
         %% Main application activity
-        {proffero_counters_srv, {proffero_counters_srv, start_link, []},
-         permanent, 100, worker, [proffero_counters_srv]},
+        {envx_counters_srv, {envx_counters_srv, start_link, []},
+         permanent, 100, worker, [envx_counters_srv]},
         %% external API
-        {proffero_counters_ext_api,
-         {proffero_counters_ext_api, start_link, []},
+        {envx_counters_ext_api,
+         {envx_counters_ext_api, start_link, []},
          permanent, 100, worker,
-         [proffero_counters_ext_api,
-          proffero_counters_ext_api_tcp_connection]}
+         [envx_counters_ext_api,
+          envx_counters_ext_api_tcp_connection]}
        ]}}.

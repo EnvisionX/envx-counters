@@ -1,11 +1,11 @@
 %%% @doc
 %%% API for external processes to fetch current values of the counters.
 
-%%% @author Aleksey Morarash <aleksey.morarash@proffero.com>
+%%% @author Aleksey Morarash <aleksey.morarash@envisionx.co>
 %%% @since 29 Aug 2014
-%%% @copyright 2014, Proffero <info@proffero.com>
+%%% @copyright 2014, EnvisionX <info@envisionx.co>
 
--module(proffero_counters_ext_api).
+-module(envx_counters_ext_api).
 
 -behaviour(gen_server).
 
@@ -21,9 +21,9 @@
 -export([init/1, handle_call/3, handle_info/2, handle_cast/2,
          terminate/2, code_change/3]).
 
--include("proffero_counters.hrl").
--include("proffero_counters_private.hrl").
--include_lib("proffero_logger/include/proffero_logger.hrl").
+-include("envx_counters.hrl").
+-include("envx_counters_private.hrl").
+-include_lib("envx_logger/include/envx_logger.hrl").
 
 -define(CMD_LIST, list).
 -define(CMD_GET, get).
@@ -38,11 +38,11 @@
    ]).
 
 -type request() ::
-        ?CMD_LIST | {?CMD_GET, proffero_counters:name()}.
+        ?CMD_LIST | {?CMD_GET, envx_counters:name()}.
 
 -type reply() ::
-        (CounterList :: [proffero_counters:name()]) |
-        (CounterValue :: proffero_counters:value()).
+        (CounterList :: [envx_counters:name()]) |
+        (CounterValue :: envx_counters:value()).
 
 %% ----------------------------------------------------------------------
 %% Internal signals and other defs
@@ -89,14 +89,14 @@ decode_request(EncodedRequest) ->
     end.
 
 %% @doc Process the request.
--spec process(?CMD_LIST) -> [proffero_counters:name()];
-             ({?CMD_GET, proffero_counters:name()}) ->
-                     {proffero_counters:name(),
-                      proffero_counters:value()}.
+-spec process(?CMD_LIST) -> [envx_counters:name()];
+             ({?CMD_GET, envx_counters:name()}) ->
+                     {envx_counters:name(),
+                      envx_counters:value()}.
 process(?CMD_LIST) ->
-    proffero_counters_srv:list();
+    envx_counters_srv:list();
 process({?CMD_GET, CounterName}) ->
-    {CounterName, proffero_counters_srv:get(CounterName)}.
+    {CounterName, envx_counters_srv:get(CounterName)}.
 
 %% @doc Encode the reply.
 -spec encode_reply(Reply :: reply()) -> iolist().
@@ -136,7 +136,7 @@ handle_info(?ACCEPT_CONNECTION, State) ->
     case gen_tcp:accept(State#state.tcp_socket, 0) of
         {ok, Socket} ->
             %% spawn
-            ok = proffero_counters_ext_api_tcp_connection:start_link(Socket),
+            ok = envx_counters_ext_api_tcp_connection:start_link(Socket),
             ok = schedule_connection_accept(0),
             {noreply, State};
         {error, timeout} ->
@@ -199,7 +199,7 @@ code_change(_OldVsn, State, _Extra) ->
 
 %% @doc Decode counter name.
 -spec decode_name(String :: nonempty_string()) ->
-                         {ok, proffero_counters:name()} | error.
+                         {ok, envx_counters:name()} | error.
 decode_name(String) ->
     try lists:map(fun list_to_existing_atom/1, string:tokens(String, ".")) of
         [_ | _] = NonEmpty ->
@@ -212,7 +212,7 @@ decode_name(String) ->
     end.
 
 %% @doc Encode counter name to external form.
--spec encode_name(CounterName :: proffero_counters:name()) ->
+-spec encode_name(CounterName :: envx_counters:name()) ->
                          EncodedCounterName :: iolist().
 encode_name(CounterName) ->
     string:join(lists:map(fun encode_name_elem/1, CounterName), ".").
@@ -245,7 +245,7 @@ check_udp_socket(State) when is_port(State#state.udp_socket) ->
 check_udp_socket(State) ->
     %% need to reopen
     BindPort =
-        proffero_config:get(?CFG_UDP_BIND_PORT, ?DEFAULT_UDP_BIND_PORT),
+        envx_config:get(?CFG_UDP_BIND_PORT, ?DEFAULT_UDP_BIND_PORT),
     SocketOpts =
         [{active, true}, {reuseaddr, true}, list],
     case gen_udp:open(BindPort, SocketOpts) of
@@ -269,7 +269,7 @@ check_tcp_socket(State) when is_port(State#state.tcp_socket) ->
 check_tcp_socket(State) ->
     %% need to reopen
     BindPort =
-        proffero_config:get(?CFG_TCP_BIND_PORT, ?DEFAULT_TCP_BIND_PORT),
+        envx_config:get(?CFG_TCP_BIND_PORT, ?DEFAULT_TCP_BIND_PORT),
     SocketOpts =
         [{active, false}, {reuseaddr, true}, list,
          {send_timeout_close, true}, {packet, line}],
