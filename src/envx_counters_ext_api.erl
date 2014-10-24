@@ -201,7 +201,7 @@ code_change(_OldVsn, State, _Extra) ->
 -spec decode_name(String :: nonempty_string()) ->
                          {ok, envx_counters:name()} | error.
 decode_name(String) ->
-    try lists:map(fun list_to_existing_atom/1, string:tokens(String, ".")) of
+    try lists:map(fun list_to_atom/1, string:tokens(String, ".")) of
         [_ | _] = NonEmpty ->
             {ok, NonEmpty};
         [] = _Empty ->
