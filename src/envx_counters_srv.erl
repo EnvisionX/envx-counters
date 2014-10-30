@@ -48,22 +48,25 @@ start_link() ->
 -spec increment(CounterName :: envx_counters:name(),
                 Delta :: envx_counters:delta()) -> ok.
 increment(CounterName, Delta) ->
-    _Sent = ?MODULE ! ?INCREMENT(CounterName, Delta),
+    CanonicName = canonicalize(CounterName),
+    _Sent = ?MODULE ! ?INCREMENT(CanonicName, Delta),
     ok.
 
 %% @doc Set a new value of the counter.
 -spec set(CounterName :: envx_counters:name(),
           Value :: envx_counters:value()) -> ok.
 set(CounterName, Value) ->
-    _Sent = ?MODULE ! ?SET(CounterName, Value),
+    CanonicName = canonicalize(CounterName),
+    _Sent = ?MODULE ! ?SET(CanonicName, Value),
     ok.
 
 %% @doc Fetch counter value.
 -spec get(CounterName :: envx_counters:name()) ->
                  Value :: envx_counters:value().
 get(CounterName) ->
-    case ets:lookup(?MODULE, CounterName) of
-        [{CounterName, Value}] ->
+    CanonicName = canonicalize(CounterName),
+    case ets:lookup(?MODULE, CanonicName) of
+        [{CanonicName, Value}] ->
             Value;
         [] ->
             0
@@ -131,3 +134,12 @@ code_change(_OldVsn, State, _Extra) ->
 %% ----------------------------------------------------------------------
 %% Internal functions
 %% ----------------------------------------------------------------------
+
+%% @doc Canonicalize counter name (convert binaries to atoms).
+-spec canonicalize(envx_counters:name()) -> envx_counters:canonic_name().
+canonicalize(CounterName) ->
+    [if is_binary(Elem) ->
+             list_to_atom(binary_to_list(Elem));
+        true ->
+             Elem
+     end || Elem <- CounterName].

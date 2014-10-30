@@ -25,12 +25,17 @@
 
 -export_type(
    [name/0,
+    canonic_name/0,
     value/0,
     delta/0
    ]).
 
 -type name() ::
+        canonic_name() |
         [atom() | binary(), ...]. %% nonempty list of atoms or binaries
+
+-type canonic_name() ::
+        [atom(), ...]. %% nonempty list of atoms
 
 -type value() :: integer().
 
