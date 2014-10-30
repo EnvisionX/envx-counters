@@ -5,7 +5,7 @@
 %%% Created     : 29 Aug 2014
 %%%----------------------------------------------------------------------
 
--ifndef(_PROFFERO_COUNTERS).
--define(_PROFFERO_COUNTERS, true).
+-ifndef(_ENVISIONX_COUNTERS).
+-define(_ENVISIONX_COUNTERS, true).
 
 -endif.

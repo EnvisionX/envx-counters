@@ -5,8 +5,8 @@
 %%% Created     : 29 Aug 2014
 %%%----------------------------------------------------------------------
 
--ifndef(_PROFFERO_COUNTERS_PRIVATE).
--define(_PROFFERO_COUNTERS_PRIVATE, true).
+-ifndef(_ENVISIONX_COUNTERS_PRIVATE).
+-define(_ENVISIONX_COUNTERS_PRIVATE, true).
 
 %% ----------------------------------------------------------------------
 %% Configuration keys
