@@ -1,3 +1,9 @@
+envx-counters (0.4.2) unstable; urgency=low
+
+  * Fix fetching a values for a counters which uses binaries in the names.
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Thu, 30 Oct 2014 15:53:00 +0200
+
 envx-counters (0.4.1) unstable; urgency=low
 
   * Reply with zero even when counter is not initialized yet.
