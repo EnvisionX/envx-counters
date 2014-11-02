@@ -15,7 +15,8 @@
     increment/2,
     set/2,
     get/1,
-    list/0
+    list/0,
+    reset/0
    ]).
 
 %% gen_server callback exports
@@ -30,6 +31,7 @@
 
 -define(INCREMENT(CounterName, Delta), {'*increment*', CounterName, Delta}).
 -define(SET(CounterName, Value), {'*set*', CounterName, Value}).
+-define(RESET, '*reset*').
 
 %% ----------------------------------------------------------------------
 %% API functions
@@ -77,6 +79,12 @@ get(CounterName) ->
 list() ->
     [Name || {Name, _Value} <- ets:tab2list(?MODULE)].
 
+%% @doc Reset all existing counters to zero.
+-spec reset() -> ok.
+reset() ->
+    _Sent = ?MODULE ! ?RESET,
+    ok.
+
 %% ----------------------------------------------------------------------
 %% gen_server callbacks
 %% ----------------------------------------------------------------------
@@ -110,6 +118,14 @@ handle_info(?INCREMENT(CounterName, Delta), State) ->
     {noreply, State};
 handle_info(?SET(CounterName, Value), State) ->
     true = ets:insert(?MODULE, {CounterName, Value}),
+    {noreply, State};
+handle_info(?RESET, State) ->
+    _Ignored =
+        ets:foldl(
+          fun({Counter, _Value}, Accum) ->
+                  true = ets:insert(?MODULE, {Counter, 0}),
+                  Accum
+          end, _Accum0 = undefined, ?MODULE),
     {noreply, State};
 handle_info(_Request, State) ->
     {noreply, State}.

@@ -13,7 +13,8 @@
     increment/2,
     set/2,
     get/1,
-    list/0
+    list/0,
+    reset/0
    ]).
 
 -include("envx_counters.hrl").
@@ -71,6 +72,11 @@ get(CounterName) ->
 -spec list() -> [name()].
 list() ->
     envx_counters_srv:list().
+
+%% @doc Reset all existing counters to zero.
+-spec reset() -> ok.
+reset() ->
+    envx_counters_srv:reset().
 
 %% --------------------------------------------------------------------
 %% Internal functions
