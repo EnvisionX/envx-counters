@@ -1,5 +1,10 @@
 #!/usr/bin/env python
 
+"""
+Command line tool for reading counter values from
+running instances of the envx_counters Erlang application.
+"""
+
 import os.path
 import socket
 import sys
