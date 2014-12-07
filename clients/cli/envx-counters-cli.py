@@ -16,7 +16,6 @@ DEFAULTS = {
     'port' : 8907,
     'proto' : 'tcp',
     'pipe' : False,
-    'cmd' : 'list',
     'cmd_args' : [],
     'read_timeout' : 1,  # socket read timeout, in seconds
     'update_period' : 1,  # one second (for pipe mode)
@@ -101,6 +100,8 @@ def parse_args(args):
             sys.exit(1)
         result['cmd_args'] = args
         args = []
+    if 'cmd' not in result:
+        usage()
     if result['pipe']:
         if result['cmd'] != 'get':
             sys.stderr.write(
