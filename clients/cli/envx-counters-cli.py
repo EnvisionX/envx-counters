@@ -34,14 +34,16 @@ def usage():
         '\t%s -h | --help        show this memo;\n'
         '\t%s [options] list     list available counters;\n'
         '\t%s [options] get Counter1 [Counter2 [Counter3 [...]]]\n'
-        '                        get current values for counters.\n'
+        '                        get current values for counters;\n'
+        '\t%s [options] dump     get current values for all counters.\n'
         'Options:\n'
         '\t--host Hostname       set hostname. Default is localhost;\n'
         '\t--port PortNumber     set port number. Default is 8907;\n'
         '\t--udp                 use UDP instead of TCP;\n'
         '\t--pipe                only for \'get\' command.\n'
         '\t                      Continously read and print the counter\n'
-        '\t                      values to the stdout.\n' % (cmd, cmd, cmd))
+        '\t                      values to the stdout.\n' %
+        (cmd, cmd, cmd, cmd))
     sys.exit(1)
 
 
@@ -87,7 +89,7 @@ def parse_args(args):
             sys.stderr.write(
                 '%s: unknown option: %s\n' % (sys.argv[0], args[0]))
             sys.exit(1)
-        if args[0] not in ('list', 'get'):
+        if args[0] not in ('list', 'get', 'dump'):
             sys.stderr.write(
                 '%s: unknown command: %s\n' % (sys.argv[0], args[0]))
             sys.exit(1)
@@ -96,6 +98,11 @@ def parse_args(args):
         if result['cmd'] == 'list' and len(args) > 0:
             sys.stderr.write(
                 '%s: extra args after \'list\' command: %r\n' %
+                (sys.argv[0], args))
+            sys.exit(1)
+        if result['cmd'] == 'dump' and len(args) > 0:
+            sys.stderr.write(
+                '%s: extra args after \'dump\' command: %r\n' %
                 (sys.argv[0], args))
             sys.exit(1)
         result['cmd_args'] = args
@@ -128,6 +135,12 @@ def do_udp(args, socket_type = socket.SOCK_DGRAM):
         sock.send('%s\n' % (cmd,))
         for name in sock.recv(READ_BUF_SIZE).split():
             sys.stdout.write(name + '\n')
+    elif cmd == 'dump':
+        sock.send('list\n')
+        for counter in sock.recv(READ_BUF_SIZE).split():
+            sock.send('get %s\n' % counter)
+            _, value = sock.recv(READ_BUF_SIZE).split()
+            sys.stdout.write('%s %s\n' % (counter, value))
     else:
         while True:
             for name in args['cmd_args']:
