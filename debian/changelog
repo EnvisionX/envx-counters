@@ -1,3 +1,9 @@
+envx-counters (0.6.0) unstable; urgency=low
+
+  * cli tool: add 'dump' command.
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Wed, 03 Dec 2014 16:41:00 +0200
+
 envx-counters (0.5.0) unstable; urgency=low
 
   * add reset() Erlang API call.
