@@ -1,3 +1,9 @@
+envx-counters (0.7.0) unstable; urgency=low
+
+  * extend Erlang API with drop/0 and dump/0 functions.
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Tue, 19 May 2015 08:27:00 +0300
+
 envx-counters (0.6.0) unstable; urgency=low
 
   * cli tool: add 'dump' command.
