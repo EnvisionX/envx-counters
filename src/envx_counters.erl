@@ -15,6 +15,7 @@
     get/1,
     list/0,
     dump/0,
+    drop/0,
     reset/0
    ]).
 
@@ -78,6 +79,11 @@ list() ->
 -spec dump() -> [{name(), value()}].
 dump() ->
     [{Name, ?MODULE:get(Name)} || Name <- lists:sort(?MODULE:list())].
+
+%% @doc Remove all existing counters.
+-spec drop() -> ok.
+drop() ->
+    envx_counters_srv:drop().
 
 %% @doc Reset all existing counters to zero.
 -spec reset() -> ok.

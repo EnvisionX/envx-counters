@@ -16,6 +16,7 @@
     set/2,
     get/1,
     list/0,
+    drop/0,
     reset/0
    ]).
 
@@ -32,6 +33,7 @@
 -define(INCREMENT(CounterName, Delta), {'*increment*', CounterName, Delta}).
 -define(SET(CounterName, Value), {'*set*', CounterName, Value}).
 -define(RESET, '*reset*').
+-define(DROP, '*drop*').
 
 %% ----------------------------------------------------------------------
 %% API functions
@@ -78,6 +80,12 @@ get(CounterName) ->
 -spec list() -> [envx_counters:name()].
 list() ->
     [Name || {Name, _Value} <- ets:tab2list(?MODULE)].
+
+%% @doc Remove all existing counters.
+-spec drop() -> ok.
+drop() ->
+    _Sent = ?MODULE ! ?DROP,
+    ok.
 
 %% @doc Reset all existing counters to zero.
 -spec reset() -> ok.
@@ -126,6 +134,9 @@ handle_info(?RESET, State) ->
                   true = ets:insert(?MODULE, {Counter, 0}),
                   Accum
           end, _Accum0 = undefined, ?MODULE),
+    {noreply, State};
+handle_info(?DROP, State) ->
+    true = ets:delete_all_objects(?MODULE),
     {noreply, State};
 handle_info(_Request, State) ->
     {noreply, State}.
