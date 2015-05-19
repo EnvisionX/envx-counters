@@ -40,8 +40,8 @@ DIALYZER_OPTS = -Wunmatched_returns -Werror_handling
 DIALYZER_APPS = erts inets kernel stdlib crypto compiler
 
 dialyze: $(PLT)
-	dialyzer --plt $< -r . $(DIALYZER_OPTS) --src
 	$(MAKE) DEBUG=y clean compile
+	dialyzer --plt $< -r . $(DIALYZER_OPTS) --src
 	dialyzer --plt $< -r . $(DIALYZER_OPTS)
 
 $(PLT):
