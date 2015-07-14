@@ -40,6 +40,9 @@ def usage():
         '\t--host Hostname       set hostname. Default is localhost;\n'
         '\t--port PortNumber     set port number. Default is 8907;\n'
         '\t--udp                 use UDP instead of TCP;\n'
+        '\t--read-timeout Seconds\n'
+        '\t                      set maximum time to wait data from the\n'
+        '\t                      remote socket. Default is 1 (second);\n'
         '\t--pipe                only for \'get\' command.\n'
         '\t                      Continously read and print the counter\n'
         '\t                      values to the stdout.\n' %
@@ -83,6 +86,14 @@ def parse_args(args):
             continue
         if args[0] == '--udp':
             result['proto'] = 'udp'
+            args = args[1:]
+            continue
+        if args[0] == '--read-timeout':
+            result['read_timeout'] = int(args[1])
+            args = args[2:]
+            continue
+        elif args[0].startswith('--read-timeout='):
+            result['read_timeout'] = int(args[0][15:])
             args = args[1:]
             continue
         if args[0].startswith('-'):
