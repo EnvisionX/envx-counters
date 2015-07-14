@@ -1,3 +1,9 @@
+envx-counters (0.8.0) unstable; urgency=low
+
+  * add --read-timeout to the command line tool.
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Tue, 14 Jul 2015 22:46:00 +0300
+
 envx-counters (0.7.0) unstable; urgency=low
 
   * extend Erlang API with drop/0 and dump/0 functions.
