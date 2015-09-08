@@ -1,5 +1,12 @@
 %%% @doc
 %%% API for external processes to fetch current values of the counters.
+%%% This process listens two sockets:
+%%% - TCP server socket listens for incoming TCP connections;
+%%% - UDP socket.
+%%%
+%%% For each new incoming TCP connection the process spawns a separate
+%%% worker process.
+%%% Each incoming UDP request the process handles itself.
 
 %%% @author Aleksey Morarash <aleksey.morarash@envisionx.co>
 %%% @since 29 Aug 2014
