@@ -1,3 +1,9 @@
+envx-counters (0.8.1) unstable; urgency=low
+
+  * fix error report formatting string.
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Tue, 15 Sep 2015 16:10:00 +0300
+
 envx-counters (0.8.0) unstable; urgency=low
 
   * add --read-timeout to the command line tool.
