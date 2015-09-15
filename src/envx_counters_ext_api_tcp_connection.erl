@@ -55,7 +55,7 @@ start_link(Socket) ->
                       Type:Reason ->
                           ?warning(
                              ?MODULE,
-                             "crashed: type=~w; reason=~9999p;"
+                             "crashed: log_id=~w; type=~w; reason=~9999p;"
                              " stacktrace=~9999p",
                              [LogID, Type, Reason,
                               erlang:get_stacktrace()])
