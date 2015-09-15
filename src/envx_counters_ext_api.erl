@@ -225,9 +225,11 @@ encode_name(CounterName) ->
     string:join(lists:map(fun encode_name_elem/1, CounterName), ".").
 
 %% @doc Encode counter name element.
--spec encode_name_elem(atom() | binary()) -> string().
+-spec encode_name_elem(atom() | binary() | integer()) -> string().
 encode_name_elem(Binary) when is_binary(Binary) ->
     binary_to_list(Binary);
+encode_name_elem(Integer) when is_integer(Integer) ->
+    integer_to_list(Integer);
 encode_name_elem(Atom) when is_atom(Atom) ->
     atom_to_list(Atom).
 

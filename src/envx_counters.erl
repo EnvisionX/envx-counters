@@ -35,7 +35,7 @@
 
 -type name() ::
         canonic_name() |
-        [atom() | binary(), ...]. %% nonempty list of atoms or binaries
+        [atom() | binary() | integer(), ...].
 
 -type canonic_name() ::
         [atom(), ...]. %% nonempty list of atoms
@@ -106,6 +106,7 @@ reset() ->
 -define(c1, [a, b, c]).
 -define(c2, [d, e, f]).
 -define(c3, [g, h, j]).
+-define(c4, [g, <<"h">>, 1]).
 
 -define(CLI, "clients/cli/envx-counters-cli.py").
 -define(CLI_UDP, ?CLI " --udp").
@@ -135,11 +136,13 @@ main_test_() ->
           ?_assertMatch(ok, ?slave_apply(?MODULE, set, [?c3, 5])),
           ?_assertMatch(5, ?slave_apply(?MODULE, get, [?c3])),
           ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c3, 5])),
-          ?_assertMatch(10, ?slave_apply(?MODULE, get, [?c3]))
+          ?_assertMatch(10, ?slave_apply(?MODULE, get, [?c3])),
+          ?_assertMatch(ok, ?slave_apply(?MODULE, increment, [?c4, 10])),
+          ?_assertMatch(10, ?slave_apply(?MODULE, get, [?c4]))
          ]},
         {"CLI tool TCP test",
          [?_assertMatch(
-             "a.b.c\nd.e.f\ng.h.j\n",
+             "a.b.c\nd.e.f\ng.h.1\ng.h.j\n",
              os:cmd(?CLI " list | sort")),
           ?_assertMatch(
              "a.b.c -1\n",
@@ -149,11 +152,14 @@ main_test_() ->
              os:cmd(?CLI " get d.e.f")),
           ?_assertMatch(
              "a.b.c -1\nd.e.f -100\n",
-             os:cmd(?CLI " get a.b.c d.e.f"))
+             os:cmd(?CLI " get a.b.c d.e.f")),
+          ?_assertMatch(
+             "g.h.1 10\n",
+             os:cmd(?CLI " get g.h.1"))
          ]},
         {"CLI tool UDP test",
          [?_assertMatch(
-             "a.b.c\nd.e.f\ng.h.j\n",
+             "a.b.c\nd.e.f\ng.h.1\ng.h.j\n",
              os:cmd(?CLI_UDP " list | sort")),
           ?_assertMatch(
              "a.b.c -1\n",
@@ -163,7 +169,10 @@ main_test_() ->
              os:cmd(?CLI_UDP " get d.e.f")),
           ?_assertMatch(
              "a.b.c -1\nd.e.f -100\n",
-             os:cmd(?CLI_UDP " get a.b.c d.e.f"))
+             os:cmd(?CLI_UDP " get a.b.c d.e.f")),
+          ?_assertMatch(
+             "g.h.1 10\n",
+             os:cmd(?CLI_UDP " get g.h.1"))
          ]}
        ]}).
 

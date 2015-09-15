@@ -167,6 +167,8 @@ code_change(_OldVsn, State, _Extra) ->
 canonicalize(CounterName) ->
     [if is_binary(Elem) ->
              list_to_atom(binary_to_list(Elem));
+        is_integer(Elem) ->
+             list_to_atom(integer_to_list(Elem));
         true ->
              Elem
      end || Elem <- CounterName].
