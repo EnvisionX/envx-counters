@@ -1,3 +1,9 @@
+envx-counters (0.9.0) unstable; urgency=low
+
+  * extend counter name with integers.
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Tue, 15 Sep 2015 16:25:00 +0300
+
 envx-counters (0.8.1) unstable; urgency=low
 
   * fix error report formatting string.
