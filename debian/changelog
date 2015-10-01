@@ -1,3 +1,10 @@
+envx-counters (0.9.1) unstable; urgency=low
+
+  * use new envx_logger API
+  * dispose of "version" file; use version from debian/changelog
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Thu, 01 Oct 2015 14:04:52 +0300
+
 envx-counters (0.9.0) unstable; urgency=low
 
   * extend counter name with integers.
