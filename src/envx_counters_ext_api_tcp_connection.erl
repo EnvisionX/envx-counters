@@ -48,16 +48,15 @@ start_link(Socket) ->
                       State =
                           #state{log_id = LogID,
                                  socket = Socket},
-                      ?trace(?MODULE, "~s started", [LogID]),
+                      ?info("~s started", [LogID]),
                       loop(State),
-                      ?trace(?MODULE, "~s finished", [LogID])
+                      ?info("~s finished", [LogID])
                   catch
-                      Type:Reason ->
-                          ?warning(
-                             ?MODULE,
+                      ExcType:ExcReason ->
+                          ?error(
                              "crashed: log_id=~w; type=~w; reason=~9999p;"
                              " stacktrace=~9999p",
-                             [LogID, Type, Reason,
+                             [LogID, ExcType, ExcReason,
                               erlang:get_stacktrace()])
                   end
           end),
@@ -90,14 +89,11 @@ loop(State) ->
                         ok ->
                             loop(State);
                         {error, Reason} ->
-                            ?warning(
-                               ?MODULE,
-                               "failed to send reply over TCP:"
-                               " ~9999p", [Reason])
+                            ?error(
+                               "failed to send reply over TCP: ~9999p",
+                               [Reason])
                     end;
                 error ->
-                    ?trace(
-                       ?MODULE,
-                       "unable to decode request: ~s", [EncodedRequest])
+                    ?error("unable to decode request: ~s", [EncodedRequest])
             end
     end.
