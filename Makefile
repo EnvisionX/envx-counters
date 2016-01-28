@@ -1,8 +1,8 @@
 APP = envx_counters
 
-VERSION = $(shell dpkg-parsechangelog -Sversion -ldebian/changelog)
+VERSION = $(shell awk '{gsub("[()]","",$$2);print$$2;exit}' debian/changelog)
 
-.PHONY: all compile html clean eunit dialyze all-tests
+.PHONY: all compile html clean eunit dialyze all-tests cover
 
 all:
 
@@ -18,6 +18,14 @@ endif
 ifdef TEST
 COPTS := $(COPTS), {d, 'TEST'}
 endif
+
+cover:
+	$(MAKE) TEST=y clean compile
+	erl -name main@127.1 -pa ebin -noshell \
+	    -eval "envx_lib_cover:c($(APP),[{i,\"include\"},{d,'TEST'}])" \
+	    -eval 'ok=eunit:test({application,$(APP)})' \
+	    -eval 'envx_lib_cover:a($(APP))' \
+	    -eval 'halt()'
 
 compile:
 	mkdir -p ebin

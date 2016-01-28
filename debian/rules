@@ -20,7 +20,7 @@ override_dh_auto_build:
 override_dh_auto_test:
 
 NAME = counters
-VERSION = $(shell dpkg-parsechangelog -Sversion -ldebian/changelog)
+VERSION = $(shell awk '{gsub("[()]","",$$2);print$$2;exit}' debian/changelog)
 DESTDIR = debian/envx-$(NAME)
 DOC_DESTDIR = debian/envx-$(NAME)-doc
 CLI_DESTDIR = debian/envx-$(NAME)-cli
