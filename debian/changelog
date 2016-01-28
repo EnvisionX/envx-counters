@@ -1,3 +1,17 @@
+envx-counters (0.9.2) unstable; urgency=low
+
+  * run unit tests during package build
+  * deb specs: simplify Erlang application installation
+  * deb specs: simplify cmd tool installation
+  * deb specs: simplify docs installation
+  * list unit test deps for Jenkins automation
+  * gitignore crash dumps
+  * move cmd tool to bin/ subdir
+  * remove dialyzer from build deps
+  * dispose of dpkg-dev build dependency
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Thu, 28 Jan 2016 15:02:50 +0200
+
 envx-counters (0.9.1) unstable; urgency=low
 
   * use new envx_logger API
