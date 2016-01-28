@@ -32,5 +32,5 @@ override_dh_install:
 	install -m 644 doc/*.html doc/*.css doc/*.png \
 	    $(DOC_DESTDIR)/usr/share/doc/envx-$(NAME)-doc
 	install -m 755 -d $(CLI_DESTDIR)/usr/bin
-	install -m 755 clients/cli/envx-counters-cli.py \
+	install -m 755 bin/envx-counters-cli \
 	    $(CLI_DESTDIR)/usr/bin/envx-counters-cli

@@ -108,7 +108,7 @@ reset() ->
 -define(c3, [g, h, j]).
 -define(c4, [g, <<"h">>, 1]).
 
--define(CLI, "clients/cli/envx-counters-cli.py").
+-define(CLI, "bin/envx-counters-cli").
 -define(CLI_UDP, ?CLI " --udp").
 
 main_test_() ->
