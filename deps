@@ -1,0 +1,11 @@
+# Unit test dependencies
+
+erlang-base
+erlang-dev
+erlang-tools
+erlang-eunit
+envx-erlang-lib
+envx-erlang-config
+envx-erlang-logger
+envx-erlang-logger-dev
+python
