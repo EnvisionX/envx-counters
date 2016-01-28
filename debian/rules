@@ -19,11 +19,8 @@ override_dh_auto_build:
 # (see override_dh_auto_build comment for details)
 override_dh_auto_test:
 
-NAME = counters
 VERSION = $(shell awk '{gsub("[()]","",$$2);print$$2;exit}' debian/changelog)
-DESTDIR = debian/envx-$(NAME)
-ERL_APP_DIR = $(DESTDIR)/usr/lib/erlang/lib/envx_$(NAME)-$(VERSION)
 override_dh_install:
-	install -m 755 -d $(ERL_APP_DIR)/ebin
-	install -m 644 ebin/*.app ebin/*.beam $(ERL_APP_DIR)/ebin
+	sed 's/{{VERSION}}/$(VERSION)/' \
+	    debian/envx-counters.install.in > debian/envx-counters.install
 	dh_install
