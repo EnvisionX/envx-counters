@@ -2,9 +2,9 @@ Source: envx-counters
 Section: non-free/misc
 Priority: extra
 Maintainer: Aleksey Morarash <aleksey.morarash@envisionx.co>
-Build-Depends: debhelper (>= 8.0.0), erlang-base, erlang-dev, erlang-tools,
- erlang-edoc, erlang-eunit, envx-erlang-logger-dev,
- envx-erlang-lib
+Build-Depends: debhelper, erlang-base, erlang-dev, erlang-tools,
+ erlang-edoc, erlang-eunit, envx-erlang-lib, envx-erlang-config,
+ envx-erlang-logger, envx-erlang-logger-dev, python
 Standards-Version: 3.9.3
 Homepage: https://github.com/EnvisionX/envx-counters
 Vcs-Browser: https://github.com/EnvisionX/envx-counters
