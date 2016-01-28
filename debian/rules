@@ -22,12 +22,8 @@ override_dh_auto_test:
 NAME = counters
 VERSION = $(shell awk '{gsub("[()]","",$$2);print$$2;exit}' debian/changelog)
 DESTDIR = debian/envx-$(NAME)
-CLI_DESTDIR = debian/envx-$(NAME)-cli
 ERL_APP_DIR = $(DESTDIR)/usr/lib/erlang/lib/envx_$(NAME)-$(VERSION)
 override_dh_install:
 	install -m 755 -d $(ERL_APP_DIR)/ebin
 	install -m 644 ebin/*.app ebin/*.beam $(ERL_APP_DIR)/ebin
-	install -m 755 -d $(CLI_DESTDIR)/usr/bin
-	install -m 755 bin/envx-counters-cli \
-	    $(CLI_DESTDIR)/usr/bin/envx-counters-cli
 	dh_install
