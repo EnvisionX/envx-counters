@@ -257,13 +257,13 @@ check_udp_socket(State) ->
         [{active, true}, {reuseaddr, true}, list],
     case gen_udp:open(BindPort, SocketOpts) of
         {ok, Socket} ->
-            ?info("listening on UDP:~w", [BindPort]),
+            catch ?info("listening on UDP:~w", [BindPort]),
             State#state{udp_socket = Socket};
         {error, Reason} ->
-            ?error(
-               "unable to open UDP socket on ~w port with "
-               "opts ~9999p: ~9999p",
-               [BindPort, SocketOpts, Reason]),
+            catch ?error(
+                     "unable to open UDP socket on ~w port with "
+                     "opts ~9999p: ~9999p",
+                     [BindPort, SocketOpts, Reason]),
             ok = schedule_check_sockets(?SOCKET_REOPEN_PERIOD),
             State
     end.
@@ -281,7 +281,7 @@ check_tcp_socket(State) ->
          {send_timeout_close, true}, {packet, line}],
     case gen_tcp:listen(BindPort, SocketOpts) of
         {ok, Socket} ->
-            ?info("listening on TCP:~w", [BindPort]),
+            catch ?info("listening on TCP:~w", [BindPort]),
             ok = schedule_connection_accept(0),
             State#state{tcp_socket = Socket};
         {error, Reason} ->
