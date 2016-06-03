@@ -15,6 +15,7 @@
     get/1,
     list/0,
     dump/0,
+    print/0,
     drop/0,
     reset/0
    ]).
@@ -79,6 +80,11 @@ list() ->
 -spec dump() -> [{name(), value()}].
 dump() ->
     [{Name, ?MODULE:get(Name)} || Name <- lists:sort(?MODULE:list())].
+
+%% @doc Print counters dump to stdout.
+-spec print() -> ok.
+print() ->
+    io:format("~p~n", [lists:sort(dump())]).
 
 %% @doc Remove all existing counters.
 -spec drop() -> ok.
