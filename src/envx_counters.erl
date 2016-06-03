@@ -122,7 +122,7 @@ main_test_() ->
       [{?slave, "-pa ebin"}],
       {inorder,
        [?_assertMatch(
-           ok, ?slave_apply(envx_lib_application, start, [?MODULE])),
+           {ok, _}, ?slave_apply(application, ensure_all_started, [?MODULE])),
         {"Erlang interface test",
          [?_assertMatch([], ?slave_apply(?MODULE, list, [])),
           ?_assertMatch(0,  ?slave_apply(?MODULE, get, [?c1])),
