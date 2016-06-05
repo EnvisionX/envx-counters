@@ -1,3 +1,15 @@
+envx-counters (1.0.0) unstable; urgency=low
+
+  * cover main activity with unit test
+  * add drop/1 API call
+  * simplify dump() API call
+  * try-catch logging
+  * replace envx_lib_application:start/1 with standard function
+  * add print/0 API function
+  * example config: comment dfault values
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Sun, 05 Jun 2016 15:54:46 +0300
+
 envx-counters (0.10.0) unstable; urgency=low
 
   * rebuild with new version of envx_logger library.
