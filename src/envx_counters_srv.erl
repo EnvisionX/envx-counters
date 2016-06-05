@@ -18,6 +18,7 @@
     list/0,
     dump/0,
     drop/0,
+    drop/1,
     reset/0
    ]).
 
@@ -35,6 +36,7 @@
 -define(SET(CounterName, Value), {'*set*', CounterName, Value}).
 -define(RESET, '*reset*').
 -define(DROP, '*drop*').
+-define(DROP_ONE(CounterName), {'*drop*', CounterName}).
 
 %% ----------------------------------------------------------------------
 %% API functions
@@ -93,6 +95,12 @@ drop() ->
     _Sent = ?MODULE ! ?DROP,
     ok.
 
+%% @doc Remove all existing counters.
+-spec drop(envx_counters:name()) -> ok.
+drop(CounterName) ->
+    _Sent = ?MODULE ! ?DROP_ONE(CounterName),
+    ok.
+
 %% @doc Reset all existing counters to zero.
 -spec reset() -> ok.
 reset() ->
@@ -143,6 +151,9 @@ handle_info(?RESET, State) ->
     {noreply, State};
 handle_info(?DROP, State) ->
     true = ets:delete_all_objects(?MODULE),
+    {noreply, State};
+handle_info(?DROP_ONE(CounterName), State) ->
+    true = ets:delete(?MODULE, CounterName),
     {noreply, State};
 handle_info(_Request, State) ->
     {noreply, State}.

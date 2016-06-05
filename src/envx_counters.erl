@@ -17,6 +17,7 @@
     dump/0,
     print/0,
     drop/0,
+    drop/1,
     reset/0
    ]).
 
@@ -90,6 +91,11 @@ print() ->
 -spec drop() -> ok.
 drop() ->
     envx_counters_srv:drop().
+
+%% @doc Remove counter.
+-spec drop(CounterName :: name()) -> ok.
+drop(CounterName) ->
+    envx_counters_srv:drop(CounterName).
 
 %% @doc Reset all existing counters to zero.
 -spec reset() -> ok.
