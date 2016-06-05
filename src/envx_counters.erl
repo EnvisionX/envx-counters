@@ -79,7 +79,7 @@ list() ->
 %% @doc Return sorted list of all counters with their values.
 -spec dump() -> [{name(), value()}].
 dump() ->
-    [{Name, ?MODULE:get(Name)} || Name <- lists:sort(?MODULE:list())].
+    envx_counters_srv:dump().
 
 %% @doc Print counters dump to stdout.
 -spec print() -> ok.

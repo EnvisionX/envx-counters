@@ -16,6 +16,7 @@
     set/2,
     get/1,
     list/0,
+    dump/0,
     drop/0,
     reset/0
    ]).
@@ -80,6 +81,11 @@ get(CounterName) ->
 -spec list() -> [envx_counters:name()].
 list() ->
     [Name || {Name, _Value} <- ets:tab2list(?MODULE)].
+
+%% @doc Return sorted list of all counters with their values.
+-spec dump() -> [{envx_counters:name(), envx_counters:value()}].
+dump() ->
+    lists:sort(ets:tab2list(?MODULE)).
 
 %% @doc Remove all existing counters.
 -spec drop() -> ok.
