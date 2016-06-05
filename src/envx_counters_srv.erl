@@ -27,6 +27,7 @@
          terminate/2, code_change/3]).
 
 -include("envx_counters.hrl").
+-include("envx_counters_private.hrl").
 
 %% ----------------------------------------------------------------------
 %% Internal signals
@@ -189,3 +190,57 @@ canonicalize(CounterName) ->
         true ->
              Elem
      end || Elem <- CounterName].
+
+%% ----------------------------------------------------------------------
+%% Unit tests
+%% ----------------------------------------------------------------------
+
+-ifdef(TEST).
+
+main_test_() ->
+    {setup,
+     _StartUp =
+         fun() ->
+                 {ok, PID} = start_link(),
+                 PID
+         end,
+     _CleanUp =
+         fun(PID) ->
+                 exit(PID, normal)
+         end,
+     {inorder,
+      [
+       {"Dump of just started server",
+        ?_assertMatch([], dump())},
+       {"Get unknown counter",
+        ?_assertMatch(0, ?MODULE:get([a, b, c]))},
+       {"Get doesnt affect dump",
+        ?_assertMatch([], dump())},
+       {"Test counter change",
+        [
+         ?_assertMatch(0, ?MODULE:get([a, b, c])),
+         ?_assertMatch([], dump()),
+         ?_assertMatch(ok, increment([a, b, c], 1)),
+         ?_assertMatch(1, ?MODULE:get([a, b, c])),
+         ?_assertMatch([{[a, b, c], 1}], dump()),
+         ?_assertMatch(ok, increment([a, b, c], 2)),
+         ?_assertMatch(3, ?MODULE:get([a, b, c])),
+         ?_assertMatch(ok, set([a, b, c], 2)),
+         ?_assertMatch(2, ?MODULE:get([a, b, c])),
+         ?_assertMatch(ok, reset()),
+         ?_assertMatch(0, ?MODULE:get([a, b, c])),
+         ?_assertMatch([{[a, b, c], 0}], dump()),
+         ?_assertMatch(ok, drop([a, b, c])),
+         ?_assertMatch(0, ?MODULE:get([a, b, c])),
+         ?_assertMatch([], dump()),
+         ?_assertMatch(ok, increment([a, b, c], 1)),
+         ?_assertMatch(1, ?MODULE:get([a, b, c])),
+         ?_assertMatch([{[a, b, c], 1}], dump()),
+         ?_assertMatch(ok, drop()),
+         ?_assertMatch(0, ?MODULE:get([a, b, c])),
+         ?_assertMatch([], dump())
+        ]
+       }
+      ]}}.
+
+-endif.
