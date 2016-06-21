@@ -1,3 +1,9 @@
+envx-counters (1.1.0) unstable; urgency=low
+
+  * introduce lazy counters
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Tue, 21 Jun 2016 15:12:27 +0300
+
 envx-counters (1.0.0) unstable; urgency=low
 
   * cover main activity with unit test
