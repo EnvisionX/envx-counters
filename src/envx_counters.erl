@@ -32,6 +32,7 @@
    [name/0,
     canonic_name/0,
     value/0,
+    value_getter/0,
     delta/0
    ]).
 
@@ -43,6 +44,8 @@
         [atom(), ...]. %% nonempty list of atoms
 
 -type value() :: integer().
+
+-type value_getter() :: fun(() -> value()).
 
 -type delta() :: integer().
 
@@ -63,7 +66,7 @@ increment(CounterName, Delta) ->
     envx_counters_srv:increment(CounterName, Delta).
 
 %% @doc Set a new value of the counter.
--spec set(CounterName :: name(), Value :: value()) -> ok.
+-spec set(CounterName :: name(), Value :: value() | value_getter()) -> ok.
 set(CounterName, Value) ->
     envx_counters_srv:set(CounterName, Value).
 
@@ -187,5 +190,31 @@ main_test_() ->
              os:cmd(?CLI_UDP " get g.h.1"))
          ]}
        ]}).
+
+getter_test_() ->
+    {setup,
+     _StartUp =
+         fun() ->
+                 {ok, _Apps} = application:ensure_all_started(?MODULE)
+         end,
+     _CleanUp =
+         fun({ok, Apps}) ->
+                 lists:foreach(
+                   fun(App) ->
+                           ok = application:stop(App)
+                   end, Apps)
+         end,
+     {inorder,
+      [
+       ?_assertMatch(0, ?MODULE:get(?c1)),
+       ?_assertMatch("a.b.c 0\n", os:cmd(?CLI " get a.b.c")),
+       ?_assertMatch(ok, set(?c1, fun() -> 1234 end)),
+       ?_assertMatch(1234, ?MODULE:get(?c1)),
+       ?_assertMatch("a.b.c 1234\n", os:cmd(?CLI " get a.b.c")),
+       ?_assertMatch(ok, set(?c1, fun() -> 12345 end)),
+       ?_assertMatch(12345, ?MODULE:get(?c1)),
+       ?_assertMatch("a.b.c 12345\n", os:cmd(?CLI " get a.b.c")),
+       ?_assertMatch("a.b.c 12345\n", os:cmd(?CLI " dump"))
+      ]}}.
 
 -endif.

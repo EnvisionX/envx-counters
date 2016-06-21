@@ -62,7 +62,7 @@ increment(CounterName, Delta) ->
 
 %% @doc Set a new value of the counter.
 -spec set(CounterName :: envx_counters:name(),
-          Value :: envx_counters:value()) -> ok.
+          Value :: envx_counters:value() | envx_counters:value_getter()) -> ok.
 set(CounterName, Value) ->
     CanonicName = canonicalize(CounterName),
     _Sent = ?MODULE ! ?SET(CanonicName, Value),
@@ -74,8 +74,10 @@ set(CounterName, Value) ->
 get(CounterName) ->
     CanonicName = canonicalize(CounterName),
     case ets:lookup(?MODULE, CanonicName) of
-        [{CanonicName, Value}] ->
+        [{CanonicName, Value}] when is_number(Value) ->
             Value;
+        [{CanonicName, Getter}] when is_function(Getter, 0) ->
+            try Getter() catch _:_ -> 0 end;
         [] ->
             0
     end.
