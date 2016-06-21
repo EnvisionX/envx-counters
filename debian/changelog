@@ -1,3 +1,9 @@
+envx-counters (1.1.1) unstable; urgency=low
+
+  * fix dump() function with lazy counters
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Tue, 21 Jun 2016 15:55:27 +0300
+
 envx-counters (1.1.0) unstable; urgency=low
 
   * introduce lazy counters
