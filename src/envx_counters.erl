@@ -208,11 +208,14 @@ getter_test_() ->
       [
        ?_assertMatch(0, ?MODULE:get(?c1)),
        ?_assertMatch("a.b.c 0\n", os:cmd(?CLI " get a.b.c")),
+       ?_assertMatch([], dump()),
        ?_assertMatch(ok, set(?c1, fun() -> 1234 end)),
        ?_assertMatch(1234, ?MODULE:get(?c1)),
        ?_assertMatch("a.b.c 1234\n", os:cmd(?CLI " get a.b.c")),
+       ?_assertMatch([{[a,b,c], 1234}], dump()),
        ?_assertMatch(ok, set(?c1, fun() -> 12345 end)),
        ?_assertMatch(12345, ?MODULE:get(?c1)),
+       ?_assertMatch([{[a,b,c], 12345}], dump()),
        ?_assertMatch("a.b.c 12345\n", os:cmd(?CLI " get a.b.c")),
        ?_assertMatch("a.b.c 12345\n", os:cmd(?CLI " dump"))
       ]}}.

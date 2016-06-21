@@ -90,7 +90,12 @@ list() ->
 %% @doc Return sorted list of all counters with their values.
 -spec dump() -> [{envx_counters:name(), envx_counters:value()}].
 dump() ->
-    lists:sort(ets:tab2list(?MODULE)).
+    lists:map(
+      fun({_K, V} = Item) when is_number(V) ->
+              Item;
+         ({K, F}) when is_function(F, 0) ->
+              {K, try F() catch _:_ -> 0 end}
+      end, lists:sort(ets:tab2list(?MODULE))).
 
 %% @doc Remove all existing counters.
 -spec drop() -> ok.
