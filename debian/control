@@ -6,9 +6,9 @@ Build-Depends: debhelper, erlang-base, erlang-dev, erlang-tools,
  erlang-edoc, erlang-eunit, envx-erlang-lib, envx-erlang-config,
  envx-erlang-logger, envx-erlang-logger-dev, python
 Standards-Version: 3.9.3
-Homepage: https://github.com/EnvisionX/envx-counters
-Vcs-Browser: https://github.com/EnvisionX/envx-counters
-Vcs-Git: https://github.com/EnvisionX/envx-counters.git
+Homepage: https://github.com/ENVISIONX/envx-counters
+Vcs-Browser: https://github.com/ENVISIONX/envx-counters
+Vcs-Git: https://github.com/ENVISIONX/envx-counters.git
 
 Package: envx-counters
 Architecture: all
@@ -27,5 +27,5 @@ Description: Counters storage interface developer documentation.
 Package: envx-counters-cli
 Architecture: all
 Depends: python
-Description: EnvisionX non-persistent counters storage CLI
- Command line tool to poll EnvisionX non-persistent counters storage.
+Description: ENVISIONX non-persistent counters storage CLI
+ Command line tool to poll ENVISIONX non-persistent counters storage.

@@ -10,7 +10,7 @@
 
 %%% @author Aleksey Morarash <aleksey.morarash@envisionx.co>
 %%% @since 29 Aug 2014
-%%% @copyright 2014, EnvisionX <info@envisionx.co>
+%%% @copyright 2014, ENVISIONX <info@envisionx.co>
 
 -module(envx_counters_ext_api).
 
