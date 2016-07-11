@@ -14,7 +14,8 @@
                   envx_counters_ext_api,
                   envx_counters_ext_api_tcp_connection
                  ]},
-  {registered,   [envx_counters_sup,
+  {registered,   [envx_counters,
+                  envx_counters_sup,
                   envx_counters_srv,
                   envx_counters_ext_api
                  ]},

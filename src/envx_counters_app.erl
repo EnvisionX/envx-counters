@@ -38,7 +38,8 @@ prep_stop(_State) ->
 %% @hidden
 -spec stop(State :: any()) -> ok.
 stop(_State) ->
-    ok.
+    %% this will kill our special process:
+    ok = envx_counters:set_enabled(true).
 
 %% @hidden
 -spec config_change(Changed :: [{Key :: atom(), Value :: any()}],

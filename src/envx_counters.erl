@@ -18,11 +18,15 @@
     print/0,
     drop/0,
     drop/1,
-    reset/0
+    reset/0,
+    is_enabled/0,
+    set_enabled/1
    ]).
 
 -include("envx_counters.hrl").
 -include("envx_counters_private.hrl").
+
+-define(is_enabled, (whereis(?MODULE) == undefined)).
 
 %% --------------------------------------------------------------------
 %% Type definitions
@@ -63,27 +67,52 @@ increment(CounterName) ->
 %% creating it if it is not exists yet.
 -spec increment(CounterName :: name(), Delta :: delta()) -> ok.
 increment(CounterName, Delta) ->
-    envx_counters_srv:increment(CounterName, Delta).
+    case ?is_enabled of
+        true ->
+            envx_counters_srv:increment(CounterName, Delta);
+        false ->
+            ok
+    end.
 
 %% @doc Set a new value of the counter.
 -spec set(CounterName :: name(), Value :: value() | value_getter()) -> ok.
 set(CounterName, Value) ->
-    envx_counters_srv:set(CounterName, Value).
+    case ?is_enabled of
+        true ->
+            envx_counters_srv:set(CounterName, Value);
+        false ->
+            ok
+    end.
 
 %% @doc Fetch counter value.
 -spec get(CounterName :: name()) -> Value :: value().
 get(CounterName) ->
-    envx_counters_srv:get(CounterName).
+    case ?is_enabled of
+        true ->
+            envx_counters_srv:get(CounterName);
+        false ->
+            0
+    end.
 
 %% @doc Return list of all counters available.
 -spec list() -> [name()].
 list() ->
-    envx_counters_srv:list().
+    case ?is_enabled of
+        true ->
+            envx_counters_srv:list();
+        false ->
+            []
+    end.
 
 %% @doc Return sorted list of all counters with their values.
 -spec dump() -> [{name(), value()}].
 dump() ->
-    envx_counters_srv:dump().
+    case ?is_enabled of
+        true ->
+            envx_counters_srv:dump();
+        false ->
+            []
+    end.
 
 %% @doc Print counters dump to stdout.
 -spec print() -> ok.
@@ -93,17 +122,81 @@ print() ->
 %% @doc Remove all existing counters.
 -spec drop() -> ok.
 drop() ->
-    envx_counters_srv:drop().
+    case ?is_enabled of
+        true ->
+            envx_counters_srv:drop();
+        false ->
+            ok
+    end.
 
 %% @doc Remove counter.
 -spec drop(CounterName :: name()) -> ok.
 drop(CounterName) ->
-    envx_counters_srv:drop(CounterName).
+    case ?is_enabled of
+        true ->
+            envx_counters_srv:drop(CounterName);
+        false ->
+            ok
+    end.
 
 %% @doc Reset all existing counters to zero.
 -spec reset() -> ok.
 reset() ->
-    envx_counters_srv:reset().
+    case ?is_enabled of
+        true ->
+            envx_counters_srv:reset();
+        false ->
+            ok
+    end.
+
+%% @doc Return 'true' if library is in enabled mode (collecting and storing
+%% counters and gauges) and 'false' when all calls like increment/1, set/2
+%% are ignored.
+-spec is_enabled() -> boolean().
+is_enabled() ->
+    %% the most efficient way to maintain such a global flag is to
+    %% create registered process. When process is alive (registered
+    %% name maps to a PID), then flag is ON.
+    %% Here we use opposite meaning: in normal mode (envx_counters
+    %% library is enabled) the process does not exists.
+    ?is_enabled.
+
+%% @doc Change library mode from enabled to disabled and vice versa.
+%% See description for is_enabled/0 for more details.
+%% This function intended only for testing purposes and can be used to
+%% bypass efforts for counter saving.
+-spec set_enabled(IsEnabled :: boolean()) -> ok.
+set_enabled(false) ->
+    _Pid =
+        spawn(
+          fun() ->
+                  %% entry point of flag process
+                  try
+                      true = register(?MODULE, self()),
+                      %% name registered, waiting
+                      %% for a signal to terminate
+                      receive
+                          stop ->
+                              ok
+                      end
+                  catch
+                      error:badarg ->
+                          %% race: process with such
+                          %% name already registered.
+                          %% just terminate
+                          ok
+                  end
+          end),
+    ok;
+set_enabled(true) ->
+    %% killing flag process
+    case whereis(?MODULE) of
+        undefined ->
+            ok;
+        PID ->
+            stop = PID ! stop,
+            ok
+    end.
 
 %% --------------------------------------------------------------------
 %% Internal functions
@@ -218,6 +311,44 @@ getter_test_() ->
        ?_assertMatch([{[a,b,c], 12345}], dump()),
        ?_assertMatch("a.b.c 12345\n", os:cmd(?CLI " get a.b.c")),
        ?_assertMatch("a.b.c 12345\n", os:cmd(?CLI " dump"))
+      ]}}.
+
+disabled_mode_test_() ->
+    {setup,
+     _StartUp =
+         fun() ->
+                 {ok, _Apps} = application:ensure_all_started(?MODULE)
+         end,
+     _CleanUp =
+         fun({ok, Apps}) ->
+                 lists:foreach(
+                   fun(App) ->
+                           ok = application:stop(App)
+                   end, Apps)
+         end,
+     {inorder,
+      [{"Normal mode",
+        [?_assert(is_enabled()),
+         ?_assertMatch(0, ?MODULE:get(?c1)),
+         ?_assertMatch(ok, increment(?c1)),
+         ?_assertMatch(ok, increment(?c1)),
+         ?_assertMatch(2, ?MODULE:get(?c1))]},
+       {"Disabled mode",
+        [?_assertMatch(ok, set_enabled(false)),
+         ?_assertMatch(ok, timer:sleep(100)),
+         ?_assertNot(is_enabled()),
+         ?_assertMatch(0, ?MODULE:get(?c1)),
+         ?_assertMatch(ok, increment(?c1)),
+         ?_assertMatch(ok, increment(?c1)),
+         ?_assertMatch(0, ?MODULE:get(?c1))]},
+       {"Restore normal mode",
+        [?_assertMatch(ok, set_enabled(true)),
+         ?_assertMatch(ok, timer:sleep(100)),
+         ?_assert(is_enabled()),
+         ?_assertMatch(2, ?MODULE:get(?c1)),
+         ?_assertMatch(ok, increment(?c1)),
+         ?_assertMatch(ok, increment(?c1)),
+         ?_assertMatch(4, ?MODULE:get(?c1))]}
       ]}}.
 
 -endif.
