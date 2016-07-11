@@ -30,16 +30,6 @@
 -include("envx_counters_private.hrl").
 
 %% ----------------------------------------------------------------------
-%% Internal signals
-%% ----------------------------------------------------------------------
-
--define(INCREMENT(CounterName, Delta), {'*increment*', CounterName, Delta}).
--define(SET(CounterName, Value), {'*set*', CounterName, Value}).
--define(RESET, '*reset*').
--define(DROP, '*drop*').
--define(DROP_ONE(CounterName), {'*drop*', CounterName}).
-
-%% ----------------------------------------------------------------------
 %% API functions
 %% ----------------------------------------------------------------------
 
@@ -57,7 +47,13 @@ start_link() ->
                 Delta :: envx_counters:delta()) -> ok.
 increment(CounterName, Delta) ->
     CanonicName = canonicalize(CounterName),
-    _Sent = ?MODULE ! ?INCREMENT(CanonicName, Delta),
+    try
+        ets:update_counter(?MODULE, CanonicName, Delta)
+    catch
+        error:badarg ->
+            %% no such counter present. Create it
+            ets:insert(?MODULE, {CanonicName, Delta})
+    end,
     ok.
 
 %% @doc Set a new value of the counter.
@@ -65,7 +61,7 @@ increment(CounterName, Delta) ->
           Value :: envx_counters:value() | envx_counters:value_getter()) -> ok.
 set(CounterName, Value) ->
     CanonicName = canonicalize(CounterName),
-    _Sent = ?MODULE ! ?SET(CanonicName, Value),
+    true = ets:insert(?MODULE, {CanonicName, Value}),
     ok.
 
 %% @doc Fetch counter value.
@@ -100,19 +96,25 @@ dump() ->
 %% @doc Remove all existing counters.
 -spec drop() -> ok.
 drop() ->
-    _Sent = ?MODULE ! ?DROP,
+    true = ets:delete_all_objects(?MODULE),
     ok.
 
 %% @doc Remove all existing counters.
 -spec drop(envx_counters:name()) -> ok.
 drop(CounterName) ->
-    _Sent = ?MODULE ! ?DROP_ONE(CounterName),
+    CanonicName = canonicalize(CounterName),
+    true = ets:delete(?MODULE, CanonicName),
     ok.
 
 %% @doc Reset all existing counters to zero.
 -spec reset() -> ok.
 reset() ->
-    _Sent = ?MODULE ! ?RESET,
+    _Ignored =
+        ets:foldl(
+          fun({Counter, _Value}, Accum) ->
+                  true = ets:insert(?MODULE, {Counter, 0}),
+                  Accum
+          end, _Accum0 = undefined, ?MODULE),
     ok.
 
 %% ----------------------------------------------------------------------
@@ -124,7 +126,7 @@ reset() ->
 %% @hidden
 -spec init(Args :: any()) -> {ok, InitialState :: #state{}}.
 init(_Args) ->
-    ?MODULE = ets:new(?MODULE, [named_table]),
+    ?MODULE = ets:new(?MODULE, [named_table, public]),
     {ok, _State = #state{}}.
 
 %% @hidden
@@ -136,33 +138,6 @@ handle_cast(_Request, State) ->
 %% @hidden
 -spec handle_info(Info :: any(), State :: #state{}) ->
                          {noreply, State :: #state{}}.
-handle_info(?INCREMENT(CounterName, Delta), State) ->
-    _Ignored =
-        try
-            ets:update_counter(?MODULE, CounterName, Delta)
-        catch
-            error:badarg ->
-                %% no such counter present. Create it
-                ets:insert(?MODULE, {CounterName, Delta})
-        end,
-    {noreply, State};
-handle_info(?SET(CounterName, Value), State) ->
-    true = ets:insert(?MODULE, {CounterName, Value}),
-    {noreply, State};
-handle_info(?RESET, State) ->
-    _Ignored =
-        ets:foldl(
-          fun({Counter, _Value}, Accum) ->
-                  true = ets:insert(?MODULE, {Counter, 0}),
-                  Accum
-          end, _Accum0 = undefined, ?MODULE),
-    {noreply, State};
-handle_info(?DROP, State) ->
-    true = ets:delete_all_objects(?MODULE),
-    {noreply, State};
-handle_info(?DROP_ONE(CounterName), State) ->
-    true = ets:delete(?MODULE, CounterName),
-    {noreply, State};
 handle_info(_Request, State) ->
     {noreply, State}.
 
