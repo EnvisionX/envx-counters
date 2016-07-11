@@ -1,3 +1,10 @@
+envx-counters (1.2.0) unstable; urgency=low
+
+  * allow to disable library in runtime to avoid extra CPU load
+  * fix company name
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Mon, 11 Jul 2016 20:52:04 +0300
+
 envx-counters (1.1.1) unstable; urgency=low
 
   * fix dump() function with lazy counters
