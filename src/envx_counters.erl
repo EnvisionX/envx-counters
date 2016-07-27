@@ -15,7 +15,9 @@
     get/1,
     list/0,
     dump/0,
+    dump_rates/0,
     print/0,
+    print_rates/0,
     drop/0,
     drop/1,
     reset/0,
@@ -114,10 +116,30 @@ dump() ->
             []
     end.
 
+%% @doc Make two dumps and calculate rate of each counter.
+-spec dump_rates() -> [{name(), integer()}].
+dump_rates() ->
+    Dump1 = dump(),
+    ok = timer:sleep(1000),
+    Dump2 = dump(),
+    Counters = lists:usort([K || {K, _} <- Dump1] ++ [K || {K, _} <- Dump2]),
+    lists:map(
+      fun(Counter) ->
+              V1 = proplists:get_value(Counter, Dump1, 0),
+              V2 = proplists:get_value(Counter, Dump2, 0),
+              Delta = V2 - V1,
+              {Counter, Delta}
+      end, Counters).
+
 %% @doc Print counters dump to stdout.
 -spec print() -> ok.
 print() ->
     io:format("~p~n", [lists:sort(dump())]).
+
+%% @doc Print rates for each counter (changes per second).
+-spec print_rates() -> ok.
+print_rates() ->
+    io:format("~p~n", [dump_rates()]).
 
 %% @doc Remove all existing counters.
 -spec drop() -> ok.
