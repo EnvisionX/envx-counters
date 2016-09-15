@@ -20,8 +20,7 @@
                   envx_counters_ext_api
                  ]},
   {applications, [envx_lib,
-                  envx_config,
-                  envx_logger
+                  envx_config
                  ]},
   {mod,          {envx_counters_app, []}}
  ]}.

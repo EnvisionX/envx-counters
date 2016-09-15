@@ -30,7 +30,6 @@
 
 -include("envx_counters.hrl").
 -include("envx_counters_private.hrl").
--include_lib("envx_logger/include/envx_logger.hrl").
 
 -define(CMD_LIST, list).
 -define(CMD_GET, get).
@@ -149,8 +148,7 @@ handle_info(?ACCEPT_CONNECTION, State) ->
         {error, timeout} ->
             ok = schedule_connection_accept(?CONNECTION_ACCEPT_PAUSE),
             {noreply, State};
-        {error, Reason} ->
-            ?error("failed to accept new connection: ~9999p", [Reason]),
+        {error, _Reason} ->
             catch gen_tcp:close(State#state.tcp_socket),
             {noreply, check_sockets(State#state{tcp_socket = undefined})}
     end;
@@ -164,21 +162,16 @@ handle_info({udp, Socket, FromIP, FromPort, EncodedRequest}, State)
                    Socket, FromIP, FromPort, EncodedReply) of
                 ok ->
                     {noreply, State};
-                {error, Reason} ->
-                    ?error(
-                       "failed to send reply over UDP: ~9999p",
-                       [Reason]),
+                {error, _Reason} ->
                     catch gen_tcp:close(Socket),
                     {noreply,
                      check_sockets(
                        State#state{udp_socket = undefined})}
             end;
         error ->
-            ?error("unable to decode request: ~s", [EncodedRequest]),
             {noreply, State}
     end;
-handle_info(Request, State) ->
-    ?warning("unknown message received: ~9999p", [Request]),
+handle_info(_Request, State) ->
     {noreply, State}.
 
 %% @hidden
@@ -257,13 +250,8 @@ check_udp_socket(State) ->
         [{active, true}, {reuseaddr, true}, list],
     case gen_udp:open(BindPort, SocketOpts) of
         {ok, Socket} ->
-            catch ?info("listening on UDP:~w", [BindPort]),
             State#state{udp_socket = Socket};
-        {error, Reason} ->
-            catch ?error(
-                     "unable to open UDP socket on ~w port with "
-                     "opts ~9999p: ~9999p",
-                     [BindPort, SocketOpts, Reason]),
+        {error, _Reason} ->
             ok = schedule_check_sockets(?SOCKET_REOPEN_PERIOD),
             State
     end.
@@ -281,14 +269,9 @@ check_tcp_socket(State) ->
          {send_timeout_close, true}, {packet, line}],
     case gen_tcp:listen(BindPort, SocketOpts) of
         {ok, Socket} ->
-            catch ?info("listening on TCP:~w", [BindPort]),
             ok = schedule_connection_accept(0),
             State#state{tcp_socket = Socket};
-        {error, Reason} ->
-            ?error(
-               "unable to open TCP server socket on ~w port with "
-               "opts ~9999p: ~9999p",
-               [BindPort, SocketOpts, Reason]),
+        {error, _Reason} ->
             ok = schedule_check_sockets(?SOCKET_REOPEN_PERIOD),
             State
     end.

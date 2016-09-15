@@ -12,7 +12,6 @@
 
 -include("envx_counters.hrl").
 -include("envx_counters_private.hrl").
--include_lib("envx_logger/include/envx_logger.hrl").
 
 -record(
    state,
@@ -48,16 +47,10 @@ start_link(Socket) ->
                       State =
                           #state{log_id = LogID,
                                  socket = Socket},
-                      ?info("~s started", [LogID]),
-                      loop(State),
-                      ?info("~s finished", [LogID])
+                      loop(State)
                   catch
-                      ExcType:ExcReason ->
-                          ?error(
-                             "crashed: log_id=~w; type=~w; reason=~9999p;"
-                             " stacktrace=~9999p",
-                             [LogID, ExcType, ExcReason,
-                              erlang:get_stacktrace()])
+                      _ExcType:_ExcReason ->
+                          ok
                   end
           end),
     ok = gen_tcp:controlling_process(Socket, Pid),
@@ -88,12 +81,10 @@ loop(State) ->
                            State#state.socket, [EncodedReply, $\n]) of
                         ok ->
                             loop(State);
-                        {error, Reason} ->
-                            ?error(
-                               "failed to send reply over TCP: ~9999p",
-                               [Reason])
+                        {error, _Reason} ->
+                            ok
                     end;
                 error ->
-                    ?error("unable to decode request: ~s", [EncodedRequest])
+                    ok
             end
     end.
