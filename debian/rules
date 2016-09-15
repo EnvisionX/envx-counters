@@ -12,8 +12,8 @@ export DH_OPTIONS
 # during tests 'clean' target is called (debhelper runs
 # the dh_auto_test target after the dh_auto_build target).
 override_dh_auto_build:
-	$(MAKE) eunit
-	$(MAKE) clean compile html
+	$(MAKE) test
+	$(MAKE) clean all doc
 
 # Do not run any tests after the build
 # (see override_dh_auto_build comment for details)

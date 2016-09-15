@@ -238,7 +238,7 @@ set_enabled(true) ->
 -define(c3, [g, h, j]).
 -define(c4, [g, <<"h">>, 1]).
 
--define(CLI, "bin/envx-counters-cli").
+-define(CLI, "../bin/envx-counters-cli").
 -define(CLI_UDP, ?CLI " --udp").
 
 main_test_() ->
