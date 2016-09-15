@@ -1,3 +1,13 @@
+envx-counters (2.0.0) unstable; urgency=low
+
+  * dispose of cyclic dependency of envx_logger
+  * add Golang implementation
+  * move Erlang code to subdir
+  * deb spec: rename envx-counters package to envx-erlang-counters
+  * remove unused gitignore file
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Thu, 15 Sep 2016 11:42:26 +0300
+
 envx-counters (1.3.0) unstable; urgency=low
 
   * add dump_rates() and print_rates() API calls
