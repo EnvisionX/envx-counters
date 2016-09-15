@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Aleksey Morarash <aleksey.morarash@envisionx.co>
 Build-Depends: debhelper, erlang-base, erlang-dev, erlang-tools,
  erlang-edoc, erlang-eunit, envx-erlang-lib, envx-erlang-config,
- envx-erlang-logger, envx-erlang-logger-dev, python
+ envx-erlang-logger, envx-erlang-logger-dev, python, golang
 Standards-Version: 3.9.3
 Homepage: https://github.com/ENVISIONX/envx-counters
 Vcs-Browser: https://github.com/ENVISIONX/envx-counters
@@ -29,3 +29,10 @@ Architecture: all
 Depends: python
 Description: ENVISIONX non-persistent counters storage CLI
  Command line tool to poll ENVISIONX non-persistent counters storage.
+
+Package: envx-golang-counters
+Architecture: all
+Description: Non-persistent counters storage interface
+ Provides an API for target Go application to update various
+ counters and an API for external processes to fetch current values
+ for the counters.

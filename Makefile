@@ -8,9 +8,12 @@ doc:
 
 test:
 	$(MAKE) -C erlang eunit
+	$(MAKE) -C golang $@
 
 fmt:
+	$(MAKE) -C golang $@
 
 clean:
 	$(MAKE) -C erlang $@
+	$(MAKE) -C golang $@
 	rm -f debian/envx-erlang-counters.install
