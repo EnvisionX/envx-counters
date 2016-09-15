@@ -1,3 +1,9 @@
+envx-counters (2.0.1) unstable; urgency=low
+
+  * deb specs: add missed installation specs for golang
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Thu, 15 Sep 2016 17:38:47 +0300
+
 envx-counters (2.0.0) unstable; urgency=low
 
   * dispose of cyclic dependency of envx_logger
