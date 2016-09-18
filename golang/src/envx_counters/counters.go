@@ -16,6 +16,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -24,34 +25,22 @@ const (
 
 	envDisabled   = "ENVX_COUNTERS_DISABLED"
 	envPortNumber = "ENVX_COUNTERS_PORT"
-
-	opHit   = 1
-	opSet   = 2
-	opReset = 3
 )
-
-// type for communication between clients and counters server.
-type eventType struct {
-	op    uint8
-	name  string
-	value int64
-}
 
 // storage for counter and gauge values
 type storageType map[string]int64
 
 var disabled bool
-var queue chan eventType
 var storage storageType
+var storage_lock *sync.Mutex
 
 // Package initialization.
 // Start all daemons.
 func init() {
 	disabled = len(os.Getenv(envDisabled)) > 0
 	storage = make(storageType)
+	storage_lock = &sync.Mutex{}
 	if !disabled {
-		queue = make(chan eventType, 10)
-		go srv()
 		go tcp_srv()
 		go udp_srv()
 	}
@@ -59,26 +48,35 @@ func init() {
 
 // Increment counter value with 1.
 func Hit(name string) {
+	HitDelta(name, 1)
+}
+
+// Increment counter value with delta.
+func HitDelta(name string, delta int64) {
 	if disabled {
 		return
 	}
-	queue <- eventType{
-		op:    opHit,
-		name:  name,
-		value: 1,
-	}
+	storage_lock.Lock()
+	defer storage_lock.Unlock()
+	v := storage[name]
+	storage[name] = v + delta
 }
 
 // Increment counter value with 1.
 func Hitf(format string, arg ...interface{}) {
+	HitDeltaf(format, 1, arg...)
+}
+
+// Increment counter value with delta.
+func HitDeltaf(format string, delta int64, arg ...interface{}) {
 	if disabled {
 		return
 	}
-	queue <- eventType{
-		op:    opHit,
-		name:  fmt.Sprintf(format, arg...),
-		value: 1,
-	}
+	name := fmt.Sprintf(format, arg...)
+	storage_lock.Lock()
+	defer storage_lock.Unlock()
+	v := storage[name]
+	storage[name] = v + delta
 }
 
 // Set new value for gauge (or counter).
@@ -86,11 +84,9 @@ func Set(name string, value int64) {
 	if disabled {
 		return
 	}
-	queue <- eventType{
-		op:    opSet,
-		name:  name,
-		value: value,
-	}
+	storage_lock.Lock()
+	defer storage_lock.Unlock()
+	storage[name] = value
 }
 
 // Delete all collected counters.
@@ -98,9 +94,9 @@ func Reset() {
 	if disabled {
 		return
 	}
-	queue <- eventType{
-		op: opReset,
-	}
+	storage_lock.Lock()
+	defer storage_lock.Unlock()
+	storage = make(storageType)
 }
 
 // Dump all collected counters to the stdout.
@@ -115,20 +111,6 @@ func Print() {
 
 // Get value for the counter.
 func Get(name string) int64 { return storage[name] }
-
-// Server thread which actually increments values of the counters.
-func srv() {
-	for event := range queue {
-		switch event.op {
-		case opHit:
-			storage[event.name] += event.value
-		case opSet:
-			storage[event.name] = event.value
-		case opReset:
-			storage = make(storageType)
-		}
-	}
-}
 
 // This thread accepts TCP connections from the network
 func tcp_srv() {
