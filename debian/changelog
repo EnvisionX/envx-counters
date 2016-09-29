@@ -1,3 +1,9 @@
+envx-counters (2.0.2) unstable; urgency=low
+
+  * golang: use mutex instead of chan with goroutine, extend API
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Thu, 29 Sep 2016 14:24:22 +0300
+
 envx-counters (2.0.1) unstable; urgency=low
 
   * deb specs: add missed installation specs for golang
