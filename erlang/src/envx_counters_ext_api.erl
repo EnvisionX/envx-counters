@@ -33,6 +33,7 @@
 
 -define(CMD_LIST, list).
 -define(CMD_GET, get).
+-define(CMD_DUMP, dump).
 
 %% ----------------------------------------------------------------------
 %% Type definitions
@@ -44,10 +45,11 @@
    ]).
 
 -type request() ::
-        ?CMD_LIST | {?CMD_GET, envx_counters:name()}.
+        ?CMD_LIST | ?CMD_DUMP | {?CMD_GET, envx_counters:name()}.
 
 -type reply() ::
         (CounterList :: [envx_counters:name()]) |
+        (Dump :: binary()) |
         (CounterValue :: envx_counters:value()).
 
 %% ----------------------------------------------------------------------
@@ -76,8 +78,11 @@ start_link() ->
 decode_request(EncodedRequest) ->
     case string:tokens(EncodedRequest, " \t\r\n") of
         [RawCommand | Args] ->
-            case string_to_atom(string:to_lower(RawCommand), [list, get]) of
+            case string_to_atom(string:to_lower(RawCommand),
+                                [?CMD_LIST, ?CMD_DUMP, ?CMD_GET]) of
                 {ok, ?CMD_LIST = Command} when Args == [] ->
+                    {ok, Command};
+                {ok, ?CMD_DUMP = Command} when Args == [] ->
                     {ok, Command};
                 {ok, ?CMD_GET = Command} when length(Args) == 1 ->
                     [RawCounterName] = Args,
@@ -96,16 +101,27 @@ decode_request(EncodedRequest) ->
 
 %% @doc Process the request.
 -spec process(?CMD_LIST) -> [envx_counters:name()];
+             (?CMD_DUMP) -> binary();
              ({?CMD_GET, envx_counters:name()}) ->
                      {envx_counters:name(),
                       envx_counters:value()}.
 process(?CMD_LIST) ->
     envx_counters_srv:list();
+process(?CMD_DUMP) ->
+    case [io_lib:format("~s ~w\n", [encode_name(N), V]) ||
+             {N, V} <- envx_counters_srv:dump()] of
+        [] ->
+            <<$\n>>;
+        Dump ->
+            iolist_to_binary(Dump)
+    end;
 process({?CMD_GET, CounterName}) ->
     {CounterName, envx_counters_srv:get(CounterName)}.
 
 %% @doc Encode the reply.
 -spec encode_reply(Reply :: reply()) -> iolist().
+encode_reply(Binary) when is_binary(Binary) ->
+    Binary;
 encode_reply(Reply) when is_list(Reply) ->
     string:join([encode_name(CounterName) || CounterName <- Reply], " ");
 encode_reply({CounterName, CounterValue}) ->
