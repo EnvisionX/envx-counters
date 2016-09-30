@@ -227,7 +227,10 @@ func processExtRequest(request string) (reply string, error bool) {
 		}
 		reply := ""
 		for name, value := range storage {
-			reply += fmt.Sprintln(name, value)
+			reply += fmt.Sprintf("%s %d\n", name, value)
+		}
+		if len(reply) == 0 {
+			reply = "\n"
 		}
 		return reply, false
 	}
