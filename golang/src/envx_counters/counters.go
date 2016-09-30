@@ -32,14 +32,14 @@ type storageType map[string]int64
 
 var disabled bool
 var storage storageType
-var storage_lock *sync.Mutex
+var storageLock sync.Locker
 
 // Package initialization.
 // Start all daemons.
 func init() {
 	disabled = len(os.Getenv(envDisabled)) > 0
 	storage = make(storageType)
-	storage_lock = &sync.Mutex{}
+	storageLock = &sync.Mutex{}
 	if !disabled {
 		go tcp_srv()
 		go udp_srv()
@@ -56,8 +56,8 @@ func HitDelta(name string, delta int64) {
 	if disabled {
 		return
 	}
-	storage_lock.Lock()
-	defer storage_lock.Unlock()
+	storageLock.Lock()
+	defer storageLock.Unlock()
 	v := storage[name]
 	storage[name] = v + delta
 }
@@ -73,8 +73,8 @@ func HitDeltaf(format string, delta int64, arg ...interface{}) {
 		return
 	}
 	name := fmt.Sprintf(format, arg...)
-	storage_lock.Lock()
-	defer storage_lock.Unlock()
+	storageLock.Lock()
+	defer storageLock.Unlock()
 	v := storage[name]
 	storage[name] = v + delta
 }
@@ -84,8 +84,8 @@ func Set(name string, value int64) {
 	if disabled {
 		return
 	}
-	storage_lock.Lock()
-	defer storage_lock.Unlock()
+	storageLock.Lock()
+	defer storageLock.Unlock()
 	storage[name] = value
 }
 
@@ -94,8 +94,8 @@ func Reset() {
 	if disabled {
 		return
 	}
-	storage_lock.Lock()
-	defer storage_lock.Unlock()
+	storageLock.Lock()
+	defer storageLock.Unlock()
 	storage = make(storageType)
 }
 
