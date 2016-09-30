@@ -1,3 +1,14 @@
+envx-counters (2.1.0) unstable; urgency=low
+
+  * golang: extend API with lazy gauges
+  * cli: make "dump" command more efficient
+  * erlang: add support for DUMP external command
+  * golang: fix reply for empty DUMP external command
+  * golang: fix reply for empty LIST external command
+  * refactor internal var names to camelCase
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Fri, 30 Sep 2016 18:49:47 +0300
+
 envx-counters (2.0.2) unstable; urgency=low
 
   * golang: use mutex instead of chan with goroutine, extend API
