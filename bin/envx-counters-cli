@@ -147,11 +147,10 @@ def do_udp(args, socket_type = socket.SOCK_DGRAM):
         for name in sock.recv(READ_BUF_SIZE).split():
             sys.stdout.write(name + '\n')
     elif cmd == 'dump':
-        sock.send('list\n')
-        for counter in sock.recv(READ_BUF_SIZE).split():
-            sock.send('get %s\n' % counter)
-            _, value = sock.recv(READ_BUF_SIZE).split()
-            sys.stdout.write('%s %s\n' % (counter, value))
+        sock.send('dump\n')
+        dump = sock.recv(READ_BUF_SIZE).strip()
+        if dump:
+            sys.stdout.write('%s\n' % dump)
     else:
         while True:
             for name in args['cmd_args']:
