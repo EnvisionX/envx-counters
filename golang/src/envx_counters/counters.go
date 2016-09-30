@@ -219,6 +219,7 @@ func processExtRequest(request string) (reply string, error bool) {
 			}
 			reply += name
 		}
+		reply += "\n"
 		return reply, false
 	case "DUMP":
 		if len(tokens) != 1 {
