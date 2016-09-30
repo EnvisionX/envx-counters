@@ -32,6 +32,7 @@ type storageType map[string]int64
 
 var disabled bool
 var storage storageType
+var storageCallbacks = map[string]func() int64{}
 var storageLock sync.Locker
 
 // Package initialization.
@@ -44,6 +45,26 @@ func init() {
 		go tcp_srv()
 		go udp_srv()
 	}
+}
+
+// Register callback function.
+func Register(name string, callback func() int64) {
+	if disabled {
+		return
+	}
+	storageLock.Lock()
+	defer storageLock.Unlock()
+	storageCallbacks[name] = callback
+}
+
+// Unregister callback function.
+func Unregister(name string) {
+	if disabled {
+		return
+	}
+	storageLock.Lock()
+	defer storageLock.Unlock()
+	delete(storageCallbacks, name)
 }
 
 // Increment counter value with 1.
@@ -110,7 +131,38 @@ func Print() {
 }
 
 // Get value for the counter.
-func Get(name string) int64 { return storage[name] }
+func Get(name string) int64 {
+	if value, ok := storage[name]; ok {
+		return value
+	}
+	if callback, ok := storageCallbacks[name]; ok {
+		return callback()
+	}
+	return 0
+}
+
+// List all counter names registered.
+func List() []string {
+	if disabled {
+		return []string{}
+	}
+	storageLock.Lock()
+	defer storageLock.Unlock()
+	sorter := map[string]bool{}
+	for k, _ := range storage {
+		sorter[k] = true
+	}
+	for k, _ := range storageCallbacks {
+		sorter[k] = true
+	}
+	res := make([]string, len(sorter))
+	i := 0
+	for k, _ := range sorter {
+		res[i] = k
+		i++
+	}
+	return res
+}
 
 // This thread accepts TCP connections from the network
 func tcp_srv() {
@@ -190,7 +242,7 @@ func processExtRequest(request string) (reply string, error bool) {
 		if len(tokens) != 2 {
 			return "", true
 		}
-		reply := fmt.Sprintln(tokens[1], storage[tokens[1]])
+		reply := fmt.Sprintln(tokens[1], Get(tokens[1]))
 		return reply, false
 	case "HIT":
 		if len(tokens) != 2 {
@@ -212,22 +264,14 @@ func processExtRequest(request string) (reply string, error bool) {
 		if len(tokens) != 1 {
 			return "", true
 		}
-		reply := ""
-		for name, _ := range storage {
-			if 0 < len(reply) {
-				reply += " "
-			}
-			reply += name
-		}
-		reply += "\n"
-		return reply, false
+		return strings.Join(List(), " ") + "\n", false
 	case "DUMP":
 		if len(tokens) != 1 {
 			return "", true
 		}
 		reply := ""
-		for name, value := range storage {
-			reply += fmt.Sprintf("%s %d\n", name, value)
+		for _, name := range List() {
+			reply += fmt.Sprintf("%s %d\n", name, Get(name))
 		}
 		if len(reply) == 0 {
 			reply = "\n"
