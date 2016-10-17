@@ -277,6 +277,12 @@ func processExtRequest(request string) (reply string, error bool) {
 			reply = "\n"
 		}
 		return reply, false
+	case "RESET":
+		if len(tokens) != 1 {
+			return "", true
+		}
+		Reset()
+		return "\n", false
 	}
 	return "", true
 }
