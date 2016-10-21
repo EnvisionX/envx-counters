@@ -1,3 +1,10 @@
+envx-counters (2.2.0) unstable; urgency=low
+
+  * golang: add Setf() API function
+  * golang: add ext command: RESET
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Fri, 21 Oct 2016 18:10:25 +0300
+
 envx-counters (2.1.0) unstable; urgency=low
 
   * golang: extend API with lazy gauges
