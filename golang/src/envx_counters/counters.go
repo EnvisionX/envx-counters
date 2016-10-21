@@ -110,6 +110,17 @@ func Set(name string, value int64) {
 	storage[name] = value
 }
 
+// Set new value for gauge (or counter).
+func Setf(format string, value int64, arg ...interface{}) {
+	if disabled {
+		return
+	}
+	name := fmt.Sprintf(format, arg...)
+	storageLock.Lock()
+	defer storageLock.Unlock()
+	storage[name] = value
+}
+
 // Delete all collected counters.
 func Reset() {
 	if disabled {
