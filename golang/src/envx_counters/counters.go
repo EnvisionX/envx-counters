@@ -193,6 +193,7 @@ func tcp_srv() {
 	for {
 		socket, err := ss.Accept()
 		if err != nil {
+			time.Sleep(time.Millisecond * 100)
 			continue
 		}
 		go handleTcpConnection(socket)
