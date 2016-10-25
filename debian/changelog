@@ -1,3 +1,9 @@
+envx-counters (2.2.1) unstable; urgency=low
+
+  * golang: do not waste CPU time on conn accept errors
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Tue, 25 Oct 2016 13:18:47 +0300
+
 envx-counters (2.2.0) unstable; urgency=low
 
   * golang: add Setf() API function
