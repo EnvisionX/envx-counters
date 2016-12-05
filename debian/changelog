@@ -1,3 +1,9 @@
+envx-counters (2.3.0) unstable; urgency=low
+
+  * erlang: implement RESET external command
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Mon, 05 Dec 2016 17:54:11 +0200
+
 envx-counters (2.2.1) unstable; urgency=low
 
   * golang: do not waste CPU time on conn accept errors
