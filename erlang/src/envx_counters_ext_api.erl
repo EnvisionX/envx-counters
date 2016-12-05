@@ -34,6 +34,7 @@
 -define(CMD_LIST, list).
 -define(CMD_GET, get).
 -define(CMD_DUMP, dump).
+-define(CMD_RESET, reset).
 
 %% ----------------------------------------------------------------------
 %% Type definitions
@@ -45,7 +46,7 @@
    ]).
 
 -type request() ::
-        ?CMD_LIST | ?CMD_DUMP | {?CMD_GET, envx_counters:name()}.
+        ?CMD_LIST | ?CMD_DUMP | ?CMD_RESET | {?CMD_GET, envx_counters:name()}.
 
 -type reply() ::
         (CounterList :: [envx_counters:name()]) |
@@ -79,10 +80,12 @@ decode_request(EncodedRequest) ->
     case string:tokens(EncodedRequest, " \t\r\n") of
         [RawCommand | Args] ->
             case string_to_atom(string:to_lower(RawCommand),
-                                [?CMD_LIST, ?CMD_DUMP, ?CMD_GET]) of
+                                [?CMD_LIST, ?CMD_DUMP, ?CMD_RESET, ?CMD_GET]) of
                 {ok, ?CMD_LIST = Command} when Args == [] ->
                     {ok, Command};
                 {ok, ?CMD_DUMP = Command} when Args == [] ->
+                    {ok, Command};
+                {ok, ?CMD_RESET = Command} when Args == [] ->
                     {ok, Command};
                 {ok, ?CMD_GET = Command} when length(Args) == 1 ->
                     [RawCounterName] = Args,
@@ -115,6 +118,9 @@ process(?CMD_DUMP) ->
         Dump ->
             iolist_to_binary(Dump)
     end;
+process(?CMD_RESET) ->
+    ok = envx_counters:reset(),
+    <<"\n">>;
 process({?CMD_GET, CounterName}) ->
     {CounterName, envx_counters_srv:get(CounterName)}.
 
