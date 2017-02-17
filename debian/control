@@ -12,8 +12,7 @@ Vcs-Git: https://github.com/ENVISIONX/envx-counters.git
 
 Package: envx-erlang-counters
 Architecture: all
-Depends: erlang-base, envx-erlang-config, envx-erlang-lib,
- envx-erlang-logger
+Depends: erlang-base, envx-erlang-config, envx-erlang-lib
 Description: Non-persistent counters storage interface
  Provides an API for target Erlang application to update various
  counters and an API for external processes to fetch current values
