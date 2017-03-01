@@ -1,3 +1,10 @@
+envx-counters (2.3.3) unstable; urgency=low
+
+  * golang: protect access to internal map storage with mutex
+  * gitignore *.swp files
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Wed, 01 Mar 2017 16:08:38 +0200
+
 envx-counters (2.3.2) unstable; urgency=low
 
   * adapt to Golang 1.7.4
