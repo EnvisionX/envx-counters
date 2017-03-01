@@ -30,17 +30,17 @@ const (
 // storage for counter and gauge values
 type storageType map[string]int64
 
-var disabled bool
-var storage storageType
-var storageCallbacks = map[string]func() int64{}
-var storageLock sync.Locker
+var (
+	disabled         bool
+	storage          = storageType{}
+	storageMu        = &sync.Mutex{}
+	storageCallbacks = map[string]func() int64{}
+)
 
 // Package initialization.
 // Start all daemons.
 func init() {
 	disabled = len(os.Getenv(envDisabled)) > 0
-	storage = make(storageType)
-	storageLock = &sync.Mutex{}
 	if !disabled {
 		go tcp_srv()
 		go udp_srv()
@@ -52,8 +52,8 @@ func Register(name string, callback func() int64) {
 	if disabled {
 		return
 	}
-	storageLock.Lock()
-	defer storageLock.Unlock()
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	storageCallbacks[name] = callback
 }
 
@@ -62,8 +62,8 @@ func Unregister(name string) {
 	if disabled {
 		return
 	}
-	storageLock.Lock()
-	defer storageLock.Unlock()
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	delete(storageCallbacks, name)
 }
 
@@ -77,8 +77,8 @@ func HitDelta(name string, delta int64) {
 	if disabled {
 		return
 	}
-	storageLock.Lock()
-	defer storageLock.Unlock()
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	v := storage[name]
 	storage[name] = v + delta
 }
@@ -94,8 +94,8 @@ func HitDeltaf(format string, delta int64, arg ...interface{}) {
 		return
 	}
 	name := fmt.Sprintf(format, arg...)
-	storageLock.Lock()
-	defer storageLock.Unlock()
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	v := storage[name]
 	storage[name] = v + delta
 }
@@ -105,8 +105,8 @@ func Set(name string, value int64) {
 	if disabled {
 		return
 	}
-	storageLock.Lock()
-	defer storageLock.Unlock()
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	storage[name] = value
 }
 
@@ -116,8 +116,8 @@ func Setf(format string, value int64, arg ...interface{}) {
 		return
 	}
 	name := fmt.Sprintf(format, arg...)
-	storageLock.Lock()
-	defer storageLock.Unlock()
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	storage[name] = value
 }
 
@@ -126,8 +126,8 @@ func Reset() {
 	if disabled {
 		return
 	}
-	storageLock.Lock()
-	defer storageLock.Unlock()
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	storage = make(storageType)
 }
 
@@ -136,6 +136,8 @@ func Print() {
 	if disabled {
 		return
 	}
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	for name, value := range storage {
 		fmt.Printf("%s %d\n", name, value)
 	}
@@ -143,6 +145,8 @@ func Print() {
 
 // Get value for the counter.
 func Get(name string) int64 {
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	if value, ok := storage[name]; ok {
 		return value
 	}
@@ -157,8 +161,8 @@ func List() []string {
 	if disabled {
 		return []string{}
 	}
-	storageLock.Lock()
-	defer storageLock.Unlock()
+	storageMu.Lock()
+	defer storageMu.Unlock()
 	sorter := map[string]bool{}
 	for k, _ := range storage {
 		sorter[k] = true
