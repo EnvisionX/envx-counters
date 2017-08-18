@@ -239,7 +239,6 @@ set_enabled(true) ->
 -define(c4, [g, <<"h">>, 1]).
 
 -define(CLI, "../bin/envx-counters-cli").
--define(CLI_UDP, ?CLI " --udp").
 
 main_test_() ->
     envx_lib_eunit:fixture_nodes(
@@ -273,7 +272,7 @@ main_test_() ->
         {"CLI tool TCP test",
          [?_assertMatch(
              "a.b.c\nd.e.f\ng.h.1\ng.h.j\n",
-             os:cmd(?CLI " list | sort")),
+             os:cmd(?CLI " list")),
           ?_assertMatch(
              "a.b.c -1\n",
              os:cmd(?CLI " get a.b.c")),
@@ -286,23 +285,6 @@ main_test_() ->
           ?_assertMatch(
              "g.h.1 10\n",
              os:cmd(?CLI " get g.h.1"))
-         ]},
-        {"CLI tool UDP test",
-         [?_assertMatch(
-             "a.b.c\nd.e.f\ng.h.1\ng.h.j\n",
-             os:cmd(?CLI_UDP " list | sort")),
-          ?_assertMatch(
-             "a.b.c -1\n",
-             os:cmd(?CLI_UDP " get a.b.c")),
-          ?_assertMatch(
-             "d.e.f -100\n",
-             os:cmd(?CLI_UDP " get d.e.f")),
-          ?_assertMatch(
-             "a.b.c -1\nd.e.f -100\n",
-             os:cmd(?CLI_UDP " get a.b.c d.e.f")),
-          ?_assertMatch(
-             "g.h.1 10\n",
-             os:cmd(?CLI_UDP " get g.h.1"))
          ]}
        ]}).
 
@@ -331,8 +313,7 @@ getter_test_() ->
        ?_assertMatch(ok, set(?c1, fun() -> 12345 end)),
        ?_assertMatch(12345, ?MODULE:get(?c1)),
        ?_assertMatch([{[a,b,c], 12345}], dump()),
-       ?_assertMatch("a.b.c 12345\n", os:cmd(?CLI " get a.b.c")),
-       ?_assertMatch("a.b.c 12345\n", os:cmd(?CLI " dump"))
+       ?_assertMatch("a.b.c 12345\n", os:cmd(?CLI " get a.b.c"))
       ]}}.
 
 disabled_mode_test_() ->
