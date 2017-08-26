@@ -1,3 +1,9 @@
+envx-counters (2.5.0) unstable; urgency=low
+
+  * -cli: add --service|-s option, replace TABs
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Sat, 26 Aug 2017 17:44:03 +0300
+
 envx-counters (2.4.0) unstable; urgency=low
 
   * [#2092] read from socket properly (simplifying the code)
