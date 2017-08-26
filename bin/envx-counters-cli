@@ -20,41 +20,68 @@ Usage:
 
 Options are:
 \t--host HOSTNAME       set hostname or IP address. Default is $HOST;
-\t--port PORT_NUMBER    set TCP port number. Default is $PORT."
+\t--port PORT_NUMBER    set TCP port number. Default is $PORT;
+\t--service|-s NAME     search the Registry for NAME and use host and
+\t                      port found automatically. Will work only within
+\t                      one Data Center and when only one instance of
+\t                      service is present in the Registry."
 }
 
 CMD=""
 while [ -z "$CMD" -a $# -gt 0 ]; do
     case "$1" in
         -h | --help)
-	    usage; exit 0 ;;
+            usage; exit 0 ;;
         --host)
-	    HOST="$2"
-	    shift ;;
+            HOST="$2"
+            shift ;;
         --port)
-	    PORT="$2"
-	    shift ;;
-	-*)
-	    echo "error: unknown option: $1" 1>&2; exit 1 ;;
-	*)
-	    CMD="$1"
-	    ;;
+            PORT="$2"
+            shift ;;
+        --service|-s)
+            SERVICE="$2"
+            shift ;;
+        -*)
+            echo "error: unknown option: $1" 1>&2; exit 1 ;;
+        *)
+            CMD="$1"
+            ;;
     esac
     shift
 done
 
+if [ -n "$SERVICE" ]; then
+    DC="0"
+    if [ -f "/etc/envx/dc" ]; then
+        DC=`cat /etc/envx/dc`
+    fi
+    FOUND=`envx-registry list --dc="$DC" --no-title "$SERVICE"`
+    if [ -z "$FOUND" ]; then
+        echo "error: service '$SERVICE' not found in DC#$DC" 1>&2
+        exit 1
+    fi
+    if [ `echo "$FOUND" | wc -l` -gt 1 ]; then
+        echo "error: ambiguous service '$SERVICE':" 1>&2
+        echo "$FOUND" 1>&2
+        exit 1
+    fi
+    set `echo "$FOUND" | awk '{print$2" "$4}'`
+    HOST="$1"
+    PORT="$2"
+fi
+
 case "$CMD" in
     list)
-	echo "list"   | socat STDIO "tcp:$HOST:$PORT" | tr ' ' '\n' | sort ;;
+        echo "list"   | socat STDIO "tcp:$HOST:$PORT" | tr ' ' '\n' | sort ;;
     dump)
-	echo "dump"   | socat STDIO "tcp:$HOST:$PORT" | sort ;;
+        echo "dump"   | socat STDIO "tcp:$HOST:$PORT" | sort ;;
     get)
         while [ $# -gt 0 ]; do
             echo "get $1"
             shift
         done | socat STDIO "tcp:$HOST:$PORT" ;;
     reset)
-	echo "reset"  | socat STDIO "tcp:$HOST:$PORT" | sort ;;
+        echo "reset"  | socat STDIO "tcp:$HOST:$PORT" | sort ;;
     *)
         echo "error: invalid command: $CMD" 1>&2
         usage; exit 1 ;;
