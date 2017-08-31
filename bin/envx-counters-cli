@@ -65,9 +65,8 @@ if [ -n "$SERVICE" ]; then
         echo "$FOUND" 1>&2
         exit 1
     fi
-    set `echo "$FOUND" | awk '{print$2" "$4}'`
-    HOST="$1"
-    PORT="$2"
+    HOST=`echo "$FOUND" | awk '{print$2}'`
+    PORT=`echo "$FOUND" | awk '{print$4}'`
 fi
 
 case "$CMD" in
