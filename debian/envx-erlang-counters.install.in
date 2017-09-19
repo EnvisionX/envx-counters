@@ -1,2 +1,0 @@
-erlang/ebin/*.app  /usr/lib/erlang/lib/envx_counters-{{VERSION}}/ebin
-erlang/ebin/*.beam /usr/lib/erlang/lib/envx_counters-{{VERSION}}/ebin

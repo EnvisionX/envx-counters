@@ -6,21 +6,3 @@ export DH_OPTIONS
 
 %:
 	dh $@
-
-# Build the binary and docs.
-# Also all tests available will run here BEFORE the build because
-# during tests 'clean' target is called (debhelper runs
-# the dh_auto_test target after the dh_auto_build target).
-override_dh_auto_build:
-	$(MAKE) test
-	$(MAKE) clean all doc
-
-# Do not run any tests after the build
-# (see override_dh_auto_build comment for details)
-override_dh_auto_test:
-
-VERSION = $(shell awk '{gsub("[()]","",$$2);print$$2;exit}' debian/changelog)
-override_dh_install:
-	sed 's/{{VERSION}}/$(VERSION)/' \
-	    debian/envx-erlang-counters.install.in > debian/envx-erlang-counters.install
-	dh_install
