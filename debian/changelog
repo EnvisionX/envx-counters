@@ -1,3 +1,9 @@
+envx-counters (2.5.2) unstable; urgency=low
+
+  * remove obsolete Erlang API
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Tue, 19 Sep 2017 17:32:13 +0300
+
 envx-counters (2.5.1) unstable; urgency=low
 
   * -s option: do not break rest of arguments
