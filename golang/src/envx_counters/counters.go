@@ -53,8 +53,8 @@ func Register(name string, callback func() int64) {
 		return
 	}
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	storageCallbacks[name] = callback
+	storageMu.Unlock()
 }
 
 // Unregister callback function.
@@ -63,8 +63,8 @@ func Unregister(name string) {
 		return
 	}
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	delete(storageCallbacks, name)
+	storageMu.Unlock()
 }
 
 // Increment counter value with 1.
@@ -78,9 +78,9 @@ func HitDelta(name string, delta int64) {
 		return
 	}
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	v := storage[name]
 	storage[name] = v + delta
+	storageMu.Unlock()
 }
 
 // Increment counter value with 1.
@@ -95,9 +95,9 @@ func HitDeltaf(format string, delta int64, arg ...interface{}) {
 	}
 	name := fmt.Sprintf(format, arg...)
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	v := storage[name]
 	storage[name] = v + delta
+	storageMu.Unlock()
 }
 
 // Set new value for gauge (or counter).
@@ -106,8 +106,8 @@ func Set(name string, value int64) {
 		return
 	}
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	storage[name] = value
+	storageMu.Unlock()
 }
 
 // Set new value for gauge (or counter).
@@ -117,8 +117,8 @@ func Setf(format string, value int64, arg ...interface{}) {
 	}
 	name := fmt.Sprintf(format, arg...)
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	storage[name] = value
+	storageMu.Unlock()
 }
 
 // Delete all collected counters.
@@ -127,8 +127,8 @@ func Reset() {
 		return
 	}
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	storage = make(storageType)
+	storageMu.Unlock()
 }
 
 // Dump all collected counters to the stdout.
@@ -137,22 +137,24 @@ func Print() {
 		return
 	}
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	for name, value := range storage {
 		fmt.Printf("%s %d\n", name, value)
 	}
+	storageMu.Unlock()
 }
 
 // Get value for the counter.
 func Get(name string) int64 {
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	if value, ok := storage[name]; ok {
+		storageMu.Unlock()
 		return value
 	}
 	if callback, ok := storageCallbacks[name]; ok {
+		storageMu.Unlock()
 		return callback()
 	}
+	storageMu.Unlock()
 	return 0
 }
 
@@ -162,7 +164,6 @@ func List() []string {
 		return []string{}
 	}
 	storageMu.Lock()
-	defer storageMu.Unlock()
 	sorter := map[string]bool{}
 	for k, _ := range storage {
 		sorter[k] = true
@@ -176,6 +177,7 @@ func List() []string {
 		res[i] = k
 		i++
 	}
+	storageMu.Unlock()
 	return res
 }
 
@@ -206,17 +208,18 @@ func tcp_srv() {
 
 // TCP connection handler thread
 func handleTcpConnection(socket net.Conn) {
-	defer socket.Close()
 	scanner := bufio.NewScanner(socket)
 	for scanner.Scan() {
 		reply, err := processExtRequest(scanner.Text())
 		if err {
+			socket.Close()
 			return
 		}
 		if 0 < len(reply) {
 			socket.Write([]byte(reply))
 		}
 	}
+	socket.Close()
 }
 
 // This thread serves requests via UDP/IP from the network
