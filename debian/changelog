@@ -1,3 +1,9 @@
+envx-counters (2.5.3) unstable; urgency=low
+
+  * use less defers
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Wed, 27 Dec 2017 20:44:49 +0200
+
 envx-counters (2.5.2) unstable; urgency=low
 
   * remove obsolete Erlang API
