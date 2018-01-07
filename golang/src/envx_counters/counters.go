@@ -39,7 +39,6 @@ func init() {
 	gDisabled = len(os.Getenv(ENV_DISABLED)) > 0
 	if !gDisabled {
 		go tcp_srv()
-		go udp_srv()
 	}
 }
 
@@ -217,34 +216,6 @@ func handleTcpConnection(socket net.Conn) {
 	socket.Close()
 }
 
-// This thread serves requests via UDP/IP from the network
-func udp_srv() {
-	port := getPort()
-	bindAddr := fmt.Sprintf(":%d", port)
-	var ss net.PacketConn
-	var err error
-	// loop until success
-	for {
-		ss, err = net.ListenPacket("udp", bindAddr)
-		if err == nil {
-			break
-		}
-		time.Sleep(5 * time.Second)
-	}
-	defer ss.Close()
-	ss.SetReadDeadline(time.Time{})
-	buff := make([]byte, 1024)
-	for {
-		n, from, err := ss.ReadFrom(buff)
-		if err == nil {
-			reply, is_err := processExtRequest(string(buff[0:n]))
-			if !is_err && 0 < len(reply) {
-				ss.WriteTo([]byte(reply), from)
-			}
-		}
-	}
-}
-
 // Process request from external client.
 func processExtRequest(request string) (reply string, error bool) {
 	tokens := strings.Fields(request)
@@ -301,7 +272,7 @@ func processExtRequest(request string) (reply string, error bool) {
 	return "", true
 }
 
-// Return TCP/UDP port number to be listened by servers.
+// Return TCP port number to be listened by servers.
 func getPort() uint16 {
 	strPort := os.Getenv(ENV_PORT)
 	port, err := strconv.ParseUint(strPort, 10, 16)
