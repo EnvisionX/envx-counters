@@ -182,26 +182,22 @@ func List() []string {
 
 // This thread accepts TCP connections from the network
 func tcp_srv() {
-	port := getPort()
-	bindAddr := fmt.Sprintf(":%d", port)
-	var ss net.Listener
-	var err error
-	// loop until success
+	bindAddr := fmt.Sprintf(":%d", getPort())
 	for {
-		ss, err = net.Listen("tcp", bindAddr)
-		if err == nil {
-			break
-		}
-		time.Sleep(5 * time.Second)
-	}
-	defer ss.Close()
-	for {
-		socket, err := ss.Accept()
+		ss, err := net.Listen("tcp", bindAddr)
 		if err != nil {
-			time.Sleep(time.Millisecond * 100)
+			// loop until success
+			time.Sleep(5 * time.Second)
 			continue
 		}
-		go handleTcpConnection(socket)
+		for {
+			socket, err := ss.Accept()
+			if err != nil {
+				time.Sleep(100 * time.Millisecond)
+				continue
+			}
+			go handleTcpConnection(socket)
+		}
 	}
 }
 
