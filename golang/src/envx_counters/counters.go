@@ -26,12 +26,9 @@ const (
 	ENV_PORT     = "ENVX_COUNTERS_PORT"
 )
 
-// storage for counter and gauge values
-type storageType map[string]int64
-
 var (
 	gDisabled         bool
-	gStorage          = storageType{}
+	gStorage          = map[string]int64{}
 	gStorageMu        = &sync.Mutex{}
 	gStorageCallbacks = map[string]func() int64{}
 )
@@ -126,7 +123,7 @@ func Reset() {
 		return
 	}
 	gStorageMu.Lock()
-	gStorage = make(storageType)
+	gStorage = map[string]int64{}
 	gStorageMu.Unlock()
 }
 
