@@ -27,10 +27,10 @@ const (
 )
 
 var (
-	gDisabled         bool
-	gStorage          = map[string]int64{}
-	gStorageMu        = sync.Mutex{}
-	gStorageCallbacks = map[string]func() int64{}
+	gDisabled  bool
+	gStorage   = map[string]int64{}
+	gStorageMu = sync.Mutex{}
+	gCallbacks = map[string]func() int64{}
 )
 
 // Package initialization.
@@ -48,7 +48,7 @@ func Register(name string, callback func() int64) {
 		return
 	}
 	gStorageMu.Lock()
-	gStorageCallbacks[name] = callback
+	gCallbacks[name] = callback
 	gStorageMu.Unlock()
 }
 
@@ -58,7 +58,7 @@ func Unregister(name string) {
 		return
 	}
 	gStorageMu.Lock()
-	delete(gStorageCallbacks, name)
+	delete(gCallbacks, name)
 	gStorageMu.Unlock()
 }
 
@@ -148,7 +148,7 @@ func Get(name string) int64 {
 		gStorageMu.Unlock()
 		return value
 	}
-	if callback, ok := gStorageCallbacks[name]; ok {
+	if callback, ok := gCallbacks[name]; ok {
 		gStorageMu.Unlock()
 		return callback()
 	}
@@ -166,7 +166,7 @@ func List() []string {
 	for k, _ := range gStorage {
 		sorter[k] = true
 	}
-	for k, _ := range gStorageCallbacks {
+	for k := range gCallbacks {
 		sorter[k] = true
 	}
 	res := make([]string, len(sorter))
