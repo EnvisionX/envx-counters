@@ -141,6 +141,9 @@ func Print() {
 
 // Get value for the counter.
 func Get(name string) int64 {
+	if gDisabled {
+		return 0
+	}
 	gStorageMu.Lock()
 	if value, ok := gStorage[name]; ok {
 		gStorageMu.Unlock()
