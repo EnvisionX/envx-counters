@@ -129,11 +129,9 @@ func Print() {
 	if gDisabled {
 		return
 	}
-	gLock.RLock()
-	for name, value := range gStorage {
-		fmt.Printf("%s %d\n", name, value)
+	for _, name := range List() {
+		fmt.Printf("%s %d\n", name, Get(name))
 	}
-	gLock.RUnlock()
 }
 
 // Get value for the counter.
