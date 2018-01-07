@@ -306,11 +306,11 @@ func processExtRequest(request string) (reply string, error bool) {
 }
 
 // Return TCP/UDP port number to be listened by servers.
-func getPort() uint32 {
+func getPort() uint16 {
 	strPort := os.Getenv(ENV_PORT)
-	port, err := strconv.ParseUint(strPort, 10, 32)
+	port, err := strconv.ParseUint(strPort, 10, 16)
 	if err != nil {
 		port = DEFAULT_PORT
 	}
-	return uint32(port)
+	return uint16(port)
 }
