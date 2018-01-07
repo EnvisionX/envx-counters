@@ -157,21 +157,21 @@ func List() []string {
 	if gDisabled {
 		return []string{}
 	}
+	uniqer := map[string]bool{}
 	gLock.RLock()
-	sorter := map[string]bool{}
-	for k, _ := range gStorage {
-		sorter[k] = true
+	for k := range gStorage {
+		uniqer[k] = true
 	}
 	for k := range gCallbacks {
-		sorter[k] = true
+		uniqer[k] = true
 	}
-	res := make([]string, len(sorter))
+	gLock.RUnlock()
+	res := make([]string, len(uniqer))
 	i := 0
-	for k, _ := range sorter {
+	for k := range uniqer {
 		res[i] = k
 		i++
 	}
-	gLock.RUnlock()
 	return res
 }
 
