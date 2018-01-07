@@ -1,3 +1,25 @@
+envx-counters (2.6.0) unstable; urgency=low
+
+  * cover Golang API with unit tests
+  * add Initialize() API call
+  * refactor and optimize List() call
+  * fix Print(): print callbacks values too
+  * simplify Reset(): locking is not needed here
+  * use sync.RWMutex
+  * refactor: gStorageCallbacks -> gCallbacks
+  * minor var names refactor
+  * golang readme: extend with examples
+  * readme: forget about Erlang
+  * remove UDP listening feature
+  * refactor TCP connection listener
+  * disabled flag: disable Get() call too
+  * simplify sync.Mutex creation
+  * dispose of storageType internal type
+  * minor fix: port number is ui16, not ui32
+  * refactor internal global var names
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Sun, 07 Jan 2018 22:44:45 +0200
+
 envx-counters (2.5.3) unstable; urgency=low
 
   * use less defers
