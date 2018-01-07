@@ -28,8 +28,8 @@ const (
 
 var (
 	gDisabled  bool
-	gStorage   = map[string]int64{}
-	gCallbacks = map[string]func() int64{}
+	gStorage   map[string]int64
+	gCallbacks map[string]func() int64
 	gLock      = sync.RWMutex{}
 )
 
@@ -38,8 +38,15 @@ var (
 func init() {
 	gDisabled = len(os.Getenv(ENV_DISABLED)) > 0
 	if !gDisabled {
+		Initialize()
 		go tcp_srv()
 	}
+}
+
+// Drop all existing counters and all registered callbacks.
+func Initialize() {
+	gStorage = map[string]int64{}
+	gCallbacks = map[string]func() int64{}
 }
 
 // Register callback function.
