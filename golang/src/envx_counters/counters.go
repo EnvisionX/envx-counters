@@ -21,27 +21,26 @@ import (
 )
 
 const (
-	defaultPort = 8907
-
-	envDisabled   = "ENVX_COUNTERS_DISABLED"
-	envPortNumber = "ENVX_COUNTERS_PORT"
+	DEFAULT_PORT = 8907
+	ENV_DISABLED = "ENVX_COUNTERS_DISABLED"
+	ENV_PORT     = "ENVX_COUNTERS_PORT"
 )
 
 // storage for counter and gauge values
 type storageType map[string]int64
 
 var (
-	disabled         bool
-	storage          = storageType{}
-	storageMu        = &sync.Mutex{}
-	storageCallbacks = map[string]func() int64{}
+	gDisabled         bool
+	gStorage          = storageType{}
+	gStorageMu        = &sync.Mutex{}
+	gStorageCallbacks = map[string]func() int64{}
 )
 
 // Package initialization.
 // Start all daemons.
 func init() {
-	disabled = len(os.Getenv(envDisabled)) > 0
-	if !disabled {
+	gDisabled = len(os.Getenv(ENV_DISABLED)) > 0
+	if !gDisabled {
 		go tcp_srv()
 		go udp_srv()
 	}
@@ -49,22 +48,22 @@ func init() {
 
 // Register callback function.
 func Register(name string, callback func() int64) {
-	if disabled {
+	if gDisabled {
 		return
 	}
-	storageMu.Lock()
-	storageCallbacks[name] = callback
-	storageMu.Unlock()
+	gStorageMu.Lock()
+	gStorageCallbacks[name] = callback
+	gStorageMu.Unlock()
 }
 
 // Unregister callback function.
 func Unregister(name string) {
-	if disabled {
+	if gDisabled {
 		return
 	}
-	storageMu.Lock()
-	delete(storageCallbacks, name)
-	storageMu.Unlock()
+	gStorageMu.Lock()
+	delete(gStorageCallbacks, name)
+	gStorageMu.Unlock()
 }
 
 // Increment counter value with 1.
@@ -74,13 +73,13 @@ func Hit(name string) {
 
 // Increment counter value with delta.
 func HitDelta(name string, delta int64) {
-	if disabled {
+	if gDisabled {
 		return
 	}
-	storageMu.Lock()
-	v := storage[name]
-	storage[name] = v + delta
-	storageMu.Unlock()
+	gStorageMu.Lock()
+	v := gStorage[name]
+	gStorage[name] = v + delta
+	gStorageMu.Unlock()
 }
 
 // Increment counter value with 1.
@@ -90,85 +89,85 @@ func Hitf(format string, arg ...interface{}) {
 
 // Increment counter value with delta.
 func HitDeltaf(format string, delta int64, arg ...interface{}) {
-	if disabled {
+	if gDisabled {
 		return
 	}
 	name := fmt.Sprintf(format, arg...)
-	storageMu.Lock()
-	v := storage[name]
-	storage[name] = v + delta
-	storageMu.Unlock()
+	gStorageMu.Lock()
+	v := gStorage[name]
+	gStorage[name] = v + delta
+	gStorageMu.Unlock()
 }
 
 // Set new value for gauge (or counter).
 func Set(name string, value int64) {
-	if disabled {
+	if gDisabled {
 		return
 	}
-	storageMu.Lock()
-	storage[name] = value
-	storageMu.Unlock()
+	gStorageMu.Lock()
+	gStorage[name] = value
+	gStorageMu.Unlock()
 }
 
 // Set new value for gauge (or counter).
 func Setf(format string, value int64, arg ...interface{}) {
-	if disabled {
+	if gDisabled {
 		return
 	}
 	name := fmt.Sprintf(format, arg...)
-	storageMu.Lock()
-	storage[name] = value
-	storageMu.Unlock()
+	gStorageMu.Lock()
+	gStorage[name] = value
+	gStorageMu.Unlock()
 }
 
 // Delete all collected counters.
 func Reset() {
-	if disabled {
+	if gDisabled {
 		return
 	}
-	storageMu.Lock()
-	storage = make(storageType)
-	storageMu.Unlock()
+	gStorageMu.Lock()
+	gStorage = make(storageType)
+	gStorageMu.Unlock()
 }
 
 // Dump all collected counters to the stdout.
 func Print() {
-	if disabled {
+	if gDisabled {
 		return
 	}
-	storageMu.Lock()
-	for name, value := range storage {
+	gStorageMu.Lock()
+	for name, value := range gStorage {
 		fmt.Printf("%s %d\n", name, value)
 	}
-	storageMu.Unlock()
+	gStorageMu.Unlock()
 }
 
 // Get value for the counter.
 func Get(name string) int64 {
-	storageMu.Lock()
-	if value, ok := storage[name]; ok {
-		storageMu.Unlock()
+	gStorageMu.Lock()
+	if value, ok := gStorage[name]; ok {
+		gStorageMu.Unlock()
 		return value
 	}
-	if callback, ok := storageCallbacks[name]; ok {
-		storageMu.Unlock()
+	if callback, ok := gStorageCallbacks[name]; ok {
+		gStorageMu.Unlock()
 		return callback()
 	}
-	storageMu.Unlock()
+	gStorageMu.Unlock()
 	return 0
 }
 
 // List all counter names registered.
 func List() []string {
-	if disabled {
+	if gDisabled {
 		return []string{}
 	}
-	storageMu.Lock()
+	gStorageMu.Lock()
 	sorter := map[string]bool{}
-	for k, _ := range storage {
+	for k, _ := range gStorage {
 		sorter[k] = true
 	}
-	for k, _ := range storageCallbacks {
+	for k, _ := range gStorageCallbacks {
 		sorter[k] = true
 	}
 	res := make([]string, len(sorter))
@@ -177,7 +176,7 @@ func List() []string {
 		res[i] = k
 		i++
 	}
-	storageMu.Unlock()
+	gStorageMu.Unlock()
 	return res
 }
 
@@ -308,10 +307,10 @@ func processExtRequest(request string) (reply string, error bool) {
 
 // Return TCP/UDP port number to be listened by servers.
 func getPort() uint32 {
-	strPort := os.Getenv(envPortNumber)
+	strPort := os.Getenv(ENV_PORT)
 	port, err := strconv.ParseUint(strPort, 10, 32)
 	if err != nil {
-		port = defaultPort
+		port = DEFAULT_PORT
 	}
 	return uint32(port)
 }
