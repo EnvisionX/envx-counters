@@ -29,7 +29,7 @@ const (
 var (
 	gDisabled         bool
 	gStorage          = map[string]int64{}
-	gStorageMu        = &sync.Mutex{}
+	gStorageMu        = sync.Mutex{}
 	gStorageCallbacks = map[string]func() int64{}
 )
 
