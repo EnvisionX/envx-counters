@@ -79,16 +79,16 @@ func HitDelta(name string, delta int64) {
 }
 
 // Increment counter value with 1.
-func Hitf(format string, arg ...interface{}) {
-	HitDeltaf(format, 1, arg...)
+func Hitf(format string, args ...interface{}) {
+	HitDeltaf(format, 1, args...)
 }
 
 // Increment counter value with delta.
-func HitDeltaf(format string, delta int64, arg ...interface{}) {
+func HitDeltaf(format string, delta int64, args ...interface{}) {
 	if gDisabled {
 		return
 	}
-	name := fmt.Sprintf(format, arg...)
+	name := fmt.Sprintf(format, args...)
 	gStorageMu.Lock()
 	v := gStorage[name]
 	gStorage[name] = v + delta
@@ -106,11 +106,11 @@ func Set(name string, value int64) {
 }
 
 // Set new value for gauge (or counter).
-func Setf(format string, value int64, arg ...interface{}) {
+func Setf(format string, value int64, args ...interface{}) {
 	if gDisabled {
 		return
 	}
-	name := fmt.Sprintf(format, arg...)
+	name := fmt.Sprintf(format, args...)
 	gStorageMu.Lock()
 	gStorage[name] = value
 	gStorageMu.Unlock()
