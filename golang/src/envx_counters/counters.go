@@ -29,8 +29,8 @@ const (
 var (
 	gDisabled  bool
 	gStorage   = map[string]int64{}
-	gStorageMu = sync.Mutex{}
 	gCallbacks = map[string]func() int64{}
+	gLock      = sync.RWMutex{}
 )
 
 // Package initialization.
@@ -47,9 +47,9 @@ func Register(name string, callback func() int64) {
 	if gDisabled {
 		return
 	}
-	gStorageMu.Lock()
+	gLock.Lock()
 	gCallbacks[name] = callback
-	gStorageMu.Unlock()
+	gLock.Unlock()
 }
 
 // Unregister callback function.
@@ -57,9 +57,9 @@ func Unregister(name string) {
 	if gDisabled {
 		return
 	}
-	gStorageMu.Lock()
+	gLock.Lock()
 	delete(gCallbacks, name)
-	gStorageMu.Unlock()
+	gLock.Unlock()
 }
 
 // Increment counter value with 1.
@@ -72,10 +72,10 @@ func HitDelta(name string, delta int64) {
 	if gDisabled {
 		return
 	}
-	gStorageMu.Lock()
+	gLock.Lock()
 	v := gStorage[name]
 	gStorage[name] = v + delta
-	gStorageMu.Unlock()
+	gLock.Unlock()
 }
 
 // Increment counter value with 1.
@@ -89,10 +89,10 @@ func HitDeltaf(format string, delta int64, args ...interface{}) {
 		return
 	}
 	name := fmt.Sprintf(format, args...)
-	gStorageMu.Lock()
+	gLock.Lock()
 	v := gStorage[name]
 	gStorage[name] = v + delta
-	gStorageMu.Unlock()
+	gLock.Unlock()
 }
 
 // Set new value for gauge (or counter).
@@ -100,9 +100,9 @@ func Set(name string, value int64) {
 	if gDisabled {
 		return
 	}
-	gStorageMu.Lock()
+	gLock.Lock()
 	gStorage[name] = value
-	gStorageMu.Unlock()
+	gLock.Unlock()
 }
 
 // Set new value for gauge (or counter).
@@ -111,9 +111,9 @@ func Setf(format string, value int64, args ...interface{}) {
 		return
 	}
 	name := fmt.Sprintf(format, args...)
-	gStorageMu.Lock()
+	gLock.Lock()
 	gStorage[name] = value
-	gStorageMu.Unlock()
+	gLock.Unlock()
 }
 
 // Delete all collected counters.
@@ -121,9 +121,9 @@ func Reset() {
 	if gDisabled {
 		return
 	}
-	gStorageMu.Lock()
+	gLock.Lock()
 	gStorage = map[string]int64{}
-	gStorageMu.Unlock()
+	gLock.Unlock()
 }
 
 // Dump all collected counters to the stdout.
@@ -131,11 +131,11 @@ func Print() {
 	if gDisabled {
 		return
 	}
-	gStorageMu.Lock()
+	gLock.RLock()
 	for name, value := range gStorage {
 		fmt.Printf("%s %d\n", name, value)
 	}
-	gStorageMu.Unlock()
+	gLock.RUnlock()
 }
 
 // Get value for the counter.
@@ -143,16 +143,16 @@ func Get(name string) int64 {
 	if gDisabled {
 		return 0
 	}
-	gStorageMu.Lock()
+	gLock.RLock()
 	if value, ok := gStorage[name]; ok {
-		gStorageMu.Unlock()
+		gLock.RUnlock()
 		return value
 	}
 	if callback, ok := gCallbacks[name]; ok {
-		gStorageMu.Unlock()
+		gLock.RUnlock()
 		return callback()
 	}
-	gStorageMu.Unlock()
+	gLock.RUnlock()
 	return 0
 }
 
@@ -161,7 +161,7 @@ func List() []string {
 	if gDisabled {
 		return []string{}
 	}
-	gStorageMu.Lock()
+	gLock.RLock()
 	sorter := map[string]bool{}
 	for k, _ := range gStorage {
 		sorter[k] = true
@@ -175,7 +175,7 @@ func List() []string {
 		res[i] = k
 		i++
 	}
-	gStorageMu.Unlock()
+	gLock.RUnlock()
 	return res
 }
 
