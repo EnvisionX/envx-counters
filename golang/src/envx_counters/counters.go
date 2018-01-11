@@ -123,6 +123,18 @@ func Setf(format string, value int64, args ...interface{}) {
 	gLock.Unlock()
 }
 
+// Drop counter from the storage.
+func Unset(name string) {
+	gLock.Lock()
+	delete(gStorage, name)
+	gLock.Unlock()
+}
+
+// Drop counter from the storage.
+func Unsetf(format string, args ...interface{}) {
+	Unset(fmt.Sprintf(format, args...))
+}
+
 // Delete all collected counters, except registered callbacks.
 func Reset() {
 	if gDisabled {

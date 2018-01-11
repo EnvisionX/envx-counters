@@ -173,6 +173,50 @@ func TestSetf(t *testing.T) {
 	}
 }
 
+func TestUnset(t *testing.T) {
+	Initialize()
+	c1 := "c1"
+	c2 := "c2"
+	assert(t, 0, c1, 0)
+	assert(t, 0, c2, 0)
+	Hit(c1)
+	Hit(c2)
+	assert(t, 1, c1, 1)
+	assert(t, 1, c2, 1)
+	Unset(c1)
+	assert(t, 2, c1, 0)
+	assert(t, 2, c2, 1)
+	a := List()
+	if len(a) != 1 {
+		t.Fatalf("expected list len 1 but %d found", len(a))
+	}
+	if a[0] != c2 {
+		t.Fatalf("expected %#v but %#v found", c2, a[0])
+	}
+}
+
+func TestUnsetf(t *testing.T) {
+	Initialize()
+	c1 := "c1"
+	c2 := "c2"
+	assert(t, 0, c1, 0)
+	assert(t, 0, c2, 0)
+	Hit(c1)
+	Hit(c2)
+	assert(t, 1, c1, 1)
+	assert(t, 1, c2, 1)
+	Unsetf("c%d", 1)
+	assert(t, 2, c1, 0)
+	assert(t, 2, c2, 1)
+	a := List()
+	if len(a) != 1 {
+		t.Fatalf("expected list len 1 but %d found", len(a))
+	}
+	if a[0] != c2 {
+		t.Fatalf("expected %#v but %#v found", c2, a[0])
+	}
+}
+
 func TestReset(t *testing.T) {
 	Initialize()
 	c1 := "c1"
