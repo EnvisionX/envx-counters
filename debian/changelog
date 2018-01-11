@@ -1,3 +1,9 @@
+envx-counters (2.7.0) unstable; urgency=low
+
+  * add Unset/Unsetf API calls
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Thu, 11 Jan 2018 16:32:18 +0200
+
 envx-counters (2.6.0) unstable; urgency=low
 
   * cover Golang API with unit tests
