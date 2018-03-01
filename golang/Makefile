@@ -3,7 +3,7 @@
 all:
 
 test:
-	GOPATH=/usr/share/gocode:`pwd` go test -v envx_counters
+	GOPATH=/usr/share/gocode:`pwd` go test -v envx_counters -race
 
 fmt:
 	find . -type f -name \*.go -exec gofmt -w '{}' ';'
