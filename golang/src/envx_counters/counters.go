@@ -4,7 +4,7 @@ and gauges.
 
 Author: Aleksey Morarash <aleksey.morarash@envisionx.co>
 Since: 19 Aug 2016
-Copyright: 2016, ENVISIONX <info@envisionx.co>
+Copyright: 2016, EnvisionX <info@envisionx.co>
 */
 
 package envx_counters

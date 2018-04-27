@@ -4,15 +4,15 @@ Priority: extra
 Maintainer: Aleksey Morarash <aleksey.morarash@envisionx.co>
 Build-Depends: debhelper, socat, golang
 Standards-Version: 4.1.4
-Homepage: https://github.com/ENVISIONX/envx-counters
-Vcs-Browser: https://github.com/ENVISIONX/envx-counters
-Vcs-Git: https://github.com/ENVISIONX/envx-counters.git
+Homepage: https://github.com/EnvisionX/envx-counters
+Vcs-Browser: https://github.com/EnvisionX/envx-counters
+Vcs-Git: https://github.com/EnvisionX/envx-counters.git
 
 Package: envx-counters-cli
 Architecture: all
 Depends: socat
-Description: ENVISIONX non-persistent counters storage CLI
- Command line tool to poll ENVISIONX non-persistent counters storage.
+Description: EnvisionX non-persistent counters storage CLI
+ Command line tool to poll EnvisionX non-persistent counters storage.
 
 Package: envx-golang-counters
 Architecture: all

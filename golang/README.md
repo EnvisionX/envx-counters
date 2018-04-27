@@ -1,4 +1,4 @@
-# ENVISIONX Counters library for Go
+# EnvisionX Counters library for Go
 
 ## Examples
 
