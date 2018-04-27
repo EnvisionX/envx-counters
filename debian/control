@@ -5,8 +5,6 @@ Maintainer: Aleksey Morarash <aleksey.morarash@envisionx.co>
 Build-Depends: debhelper, socat, golang
 Standards-Version: 4.1.4
 Homepage: https://github.com/EnvisionX/envx-counters
-Vcs-Browser: https://github.com/EnvisionX/envx-counters
-Vcs-Git: https://github.com/EnvisionX/envx-counters.git
 
 Package: envx-counters-cli
 Architecture: all
