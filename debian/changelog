@@ -1,3 +1,14 @@
+envx-counters (2.7.1) unstable; urgency=low
+
+  * Adapt golang paths for Debian Stretch
+  * Adapt golang lib path to Debian Stretch rules
+  * Fix copyright year
+  * Specs: remove Vcs-Browser and Vcs-Git links
+  * Fix company name
+  * Upgrade Debian Policy version references
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Sat, 28 Apr 2018 11:47:51 +0300
+
 envx-counters (2.7.0) unstable; urgency=low
 
   * add Unset/Unsetf API calls
