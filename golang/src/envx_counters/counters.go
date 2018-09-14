@@ -31,7 +31,7 @@ var (
 	gDisabled  bool
 	gStorage   map[string]*int64
 	gCallbacks map[string]func() int64
-	gLock      = sync.RWMutex{}
+	gLock      sync.RWMutex
 )
 
 // Package initialization.
