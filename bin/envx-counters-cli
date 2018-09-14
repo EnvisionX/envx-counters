@@ -16,6 +16,8 @@ Usage:
 \t$SELF [options] dump     get current values for all counters.
 \t$SELF [options] get COUNTER_NAME [COUNTER_NAME [...]]
 \t                         get current value for specified counters;
+\t$SELF [options] hit COUNTER_NAME
+\t                         increment counter by 1;
 \t$SELF [options] reset    drop all counters to zero.
 
 Options are:
@@ -79,6 +81,8 @@ case "$CMD" in
             echo "get $1"
             shift
         done | socat STDIO "tcp:$HOST:$PORT" ;;
+    hit)
+        echo "hit $1"  | socat STDIO "tcp:$HOST:$PORT" | sort ;;
     reset)
         echo "reset"  | socat STDIO "tcp:$HOST:$PORT" | sort ;;
     *)
