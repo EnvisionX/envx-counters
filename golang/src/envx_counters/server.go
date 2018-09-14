@@ -83,11 +83,17 @@ func processExtRequest(request string) (reply string, error bool) {
 		reply := fmt.Sprintln(args[0], Get(args[0]))
 		return reply, false
 	case "HIT":
-		if len(args) != 1 {
-			return "", true
+		switch len(args) {
+		case 1:
+			Hit(args[0])
+			return "", false
+		case 2:
+			if n, err := strconv.ParseInt(args[1], 10, 64); err == nil {
+				HitDelta(args[0], n)
+				return "", false
+			}
 		}
-		Hit(args[0])
-		return "", false
+		return "", true
 	case "SET":
 		if len(args) != 2 {
 			return "", true
