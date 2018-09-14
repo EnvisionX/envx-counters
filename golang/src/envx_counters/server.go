@@ -7,6 +7,7 @@ package envx_counters
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"net"
 	"os"
 	"strconv"
@@ -21,9 +22,13 @@ const DEFAULT_PORT = 8907
 func startServer() {
 	port := DEFAULT_PORT
 	if s := os.Getenv(ENV_PORT); s != "" {
-		if n, err := strconv.ParseUint(s, 10, 16); err == nil {
-			port = int(n)
+		n, err := strconv.ParseUint(s, 10, 16)
+		if err != nil {
+			log.Fatalf("Invalid value %#v for %s "+
+				"environment variable: %s",
+				s, ENV_PORT, err)
 		}
+		port = int(n)
 	}
 	bindAddr := fmt.Sprintf(":%d", port)
 	for {
