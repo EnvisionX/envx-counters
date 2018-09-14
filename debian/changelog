@@ -1,3 +1,17 @@
+envx-counters (2.8.0) unstable; urgency=low
+
+  * Add integration test
+  * Extend HIT network command with optional arg
+  * Extend cli tool with missed hit command
+  * Minor variable names refactor
+  * Do not hide configuration error
+  * Inline getPort() function
+  * Move server code to separate file
+  * Simplify mutex creation
+  * Fix project homepage URL
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Fri, 14 Sep 2018 13:34:46 +0300
+
 envx-counters (2.7.2) unstable; urgency=low
 
   * [#2899] Use atomic operations
