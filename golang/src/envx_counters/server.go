@@ -19,7 +19,13 @@ const DEFAULT_PORT = 8907
 // Goroutine.
 // Accepts TCP connections from the network
 func startServer() {
-	bindAddr := fmt.Sprintf(":%d", getPort())
+	port := DEFAULT_PORT
+	if s := os.Getenv(ENV_PORT); s != "" {
+		if n, err := strconv.ParseUint(s, 10, 16); err == nil {
+			port = int(n)
+		}
+	}
+	bindAddr := fmt.Sprintf(":%d", port)
 	for {
 		ss, err := net.Listen("tcp", bindAddr)
 		if err != nil {
@@ -108,14 +114,4 @@ func processExtRequest(request string) (reply string, error bool) {
 		return "\n", false
 	}
 	return "", true
-}
-
-// Return TCP port number to be listened by servers.
-func getPort() uint16 {
-	strPort := os.Getenv(ENV_PORT)
-	port, err := strconv.ParseUint(strPort, 10, 16)
-	if err != nil {
-		port = DEFAULT_PORT
-	}
-	return uint16(port)
 }
