@@ -71,36 +71,40 @@ func processExtRequest(request string) (reply string, error bool) {
 	if len(tokens) < 1 {
 		return "", true
 	}
-	switch strings.ToUpper(tokens[0]) {
+	var (
+		command = strings.ToUpper(tokens[0])
+		args    = tokens[1:]
+	)
+	switch command {
 	case "GET":
-		if len(tokens) != 2 {
+		if len(args) != 1 {
 			return "", true
 		}
-		reply := fmt.Sprintln(tokens[1], Get(tokens[1]))
+		reply := fmt.Sprintln(args[0], Get(args[0]))
 		return reply, false
 	case "HIT":
-		if len(tokens) != 2 {
+		if len(args) != 1 {
 			return "", true
 		}
-		Hit(tokens[1])
+		Hit(args[0])
 		return "", false
 	case "SET":
-		if len(tokens) != 3 {
+		if len(args) != 2 {
 			return "", true
 		}
-		value, err := strconv.ParseInt(tokens[2], 10, 64)
+		value, err := strconv.ParseInt(args[1], 10, 64)
 		if err != nil {
 			return "", true
 		}
-		Set(tokens[1], value)
+		Set(args[0], value)
 		return "", false
 	case "LIST":
-		if len(tokens) != 1 {
+		if len(args) != 0 {
 			return "", true
 		}
 		return strings.Join(List(), " ") + "\n", false
 	case "DUMP":
-		if len(tokens) != 1 {
+		if len(args) != 0 {
 			return "", true
 		}
 		reply := ""
@@ -112,7 +116,7 @@ func processExtRequest(request string) (reply string, error bool) {
 		}
 		return reply, false
 	case "RESET":
-		if len(tokens) != 1 {
+		if len(args) != 0 {
 			return "", true
 		}
 		Reset()
