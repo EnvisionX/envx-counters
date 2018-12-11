@@ -13,7 +13,6 @@ import (
 	"fmt"
 	"os"
 	"sync"
-	"sync/atomic"
 )
 
 const (
@@ -23,7 +22,7 @@ const (
 
 var (
 	gDisabled  bool
-	gStorage   map[string]*int64
+	gStorage   map[string]int64
 	gCallbacks map[string]func() int64
 	gLock      sync.RWMutex
 )
@@ -40,7 +39,7 @@ func init() {
 
 // Drop all existing counters and all registered callbacks.
 func Initialize() {
-	gStorage = map[string]*int64{}
+	gStorage = map[string]int64{}
 	gCallbacks = map[string]func() int64{}
 }
 
@@ -74,26 +73,15 @@ func HitDelta(name string, delta int64) {
 	if gDisabled {
 		return
 	}
-
-	gLock.RLock()
-	if v := gStorage[name]; v != nil {
-		gLock.RUnlock()
-		atomic.AddInt64(v, delta)
-		return
-	}
-	gLock.RUnlock()
-	i := delta
 	gLock.Lock()
-	gStorage[name] = &i
+	v := gStorage[name]
+	gStorage[name] = v + delta
 	gLock.Unlock()
 }
 
 // Increment counter value with 1.
 func Hitf(format string, args ...interface{}) {
-	if gDisabled {
-		return
-	}
-	HitDelta(fmt.Sprintf(format, args...), 1)
+	HitDeltaf(format, 1, args...)
 }
 
 // Increment counter value with delta.
@@ -101,7 +89,11 @@ func HitDeltaf(format string, delta int64, args ...interface{}) {
 	if gDisabled {
 		return
 	}
-	HitDelta(fmt.Sprintf(format, args...), delta)
+	name := fmt.Sprintf(format, args...)
+	gLock.Lock()
+	v := gStorage[name]
+	gStorage[name] = v + delta
+	gLock.Unlock()
 }
 
 // Set new value for gauge (or counter).
@@ -109,17 +101,8 @@ func Set(name string, value int64) {
 	if gDisabled {
 		return
 	}
-
-	gLock.RLock()
-	if v := gStorage[name]; v != nil {
-		gLock.RUnlock()
-		atomic.StoreInt64(v, value)
-		return
-	}
-	gLock.RUnlock()
-	i := value
 	gLock.Lock()
-	gStorage[name] = &i
+	gStorage[name] = value
 	gLock.Unlock()
 }
 
@@ -128,7 +111,10 @@ func Setf(format string, value int64, args ...interface{}) {
 	if gDisabled {
 		return
 	}
-	Set(fmt.Sprintf(format, args...), value)
+	name := fmt.Sprintf(format, args...)
+	gLock.Lock()
+	gStorage[name] = value
+	gLock.Unlock()
 }
 
 // Drop counter from the storage.
@@ -140,9 +126,6 @@ func Unset(name string) {
 
 // Drop counter from the storage.
 func Unsetf(format string, args ...interface{}) {
-	if gDisabled {
-		return
-	}
 	Unset(fmt.Sprintf(format, args...))
 }
 
@@ -151,9 +134,7 @@ func Reset() {
 	if gDisabled {
 		return
 	}
-	gLock.Lock()
-	gStorage = map[string]*int64{}
-	gLock.Unlock()
+	gStorage = map[string]int64{}
 }
 
 // Dump all collected counters to the stdout.
@@ -174,7 +155,7 @@ func Get(name string) int64 {
 	gLock.RLock()
 	if value, ok := gStorage[name]; ok {
 		gLock.RUnlock()
-		return atomic.LoadInt64(value)
+		return value
 	}
 	if callback, ok := gCallbacks[name]; ok {
 		gLock.RUnlock()
