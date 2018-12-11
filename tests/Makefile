@@ -3,7 +3,7 @@
 CLI = ../bin/envx-counters-cli
 export GOPATH = $(shell pwd)/../golang
 
-all: server
+all: server races
 
 server:
 	$(MAKE) clean
@@ -25,6 +25,12 @@ server:
 	test "`$(CLI) list`" = ""
 	test "`$(CLI) dump`" = ""
 	test "`$(CLI) get myName`" = "myName 0"
+
+races:
+	$(MAKE) clean
+	mkdir run
+	go build -o run/races races.go
+	for i in `seq 15`; do run/races || exit 1; done
 
 clean:
 	rm -rf run
