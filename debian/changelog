@@ -1,3 +1,10 @@
+envx-counters (2.8.1) unstable; urgency=low
+
+  * Revert "[#2899] Use atomic operations"
+  * Add test for race conditions
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Tue, 11 Dec 2018 16:12:33 +0200
+
 envx-counters (2.8.0) unstable; urgency=low
 
   * Add integration test
