@@ -1,3 +1,9 @@
+envx-counters (2.9.0) unstable; urgency=low
+
+  * rebuild with new versions of libs.
+
+ -- Oleksii Klitovchenko <oleksii.klitovchenko@envisionx.co>  Thu, 05 Mar 2020 09:51:26 +0200
+
 envx-counters (2.8.1) unstable; urgency=low
 
   * Revert "[#2899] Use atomic operations"
