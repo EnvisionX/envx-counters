@@ -165,6 +165,14 @@ func Get(name string) int64 {
 	return 0
 }
 
+// Getf fetches value for the counter.
+func Getf(format string, args ...interface{}) int64 {
+	if gDisabled {
+		return 0
+	}
+	return Get(fmt.Sprintf(format, args...))
+}
+
 // List all counter names registered.
 func List() []string {
 	if gDisabled {
