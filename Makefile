@@ -1,5 +1,7 @@
 .PHONY: all test fmt clean
 
+export HOME = $(shell pwd)
+
 all:
 
 test:
