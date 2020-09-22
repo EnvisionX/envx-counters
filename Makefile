@@ -6,7 +6,7 @@ all:
 
 test:
 	$(MAKE) -C golang $@
-	$(MAKE) -C tests
+	$(MAKE) -C tests -j1
 
 fmt:
 	$(MAKE) -C golang $@
