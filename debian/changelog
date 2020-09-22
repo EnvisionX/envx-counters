@@ -1,3 +1,10 @@
+envx-counters (2.10.0) unstable; urgency=low
+
+  * Fix failing build
+  * Extend with Getf() function
+
+ -- Aleksey Morarash <aleksey.morarash@gmail.com>  Tue, 22 Sep 2020 10:37:45 +0300
+
 envx-counters (2.9.0) unstable; urgency=low
 
   * rebuild with new versions of libs.
