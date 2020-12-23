@@ -134,7 +134,9 @@ func Reset() {
 	if gDisabled {
 		return
 	}
+	gLock.Lock()
 	gStorage = map[string]int64{}
+	gLock.Unlock()
 }
 
 // Dump all collected counters to the stdout.
