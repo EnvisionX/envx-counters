@@ -1,3 +1,11 @@
+envx-counters (2.10.3) unstable; urgency=low
+
+  * Move out source code from golang dir
+  * [ADT-287] Avoid races during unit tests
+  * Minor fixes for golang code Makefile
+
+ -- Aleksey Morarash <aleksey.morarash@envisionx.co>  Wed, 23 Dec 2020 20:06:18 +0200
+
 envx-counters (2.10.2) unstable; urgency=low
 
   * [IS-197] Make it compatible with go mod package manager
