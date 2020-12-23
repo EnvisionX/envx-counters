@@ -1,11 +1,14 @@
-.PHONY: all test fmt clean
+.PHONY: all test cover clean
+
+DIR = src/envx_counters
 
 all:
 
 test:
-	GOPATH=/usr/share/gocode:`pwd` go test -v envx_counters -race
+	cd $(DIR) && go test -v -race -coverprofile=../.cover.out
 
-fmt:
-	find . -type f -name \*.go -exec gofmt -w '{}' ';'
+cover: test
+	cd $(DIR) && go tool cover -html=../.cover.out
 
 clean:
+	rm -f src/.cover.out
