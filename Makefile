@@ -1,16 +1,20 @@
-.PHONY: all test fmt clean
+.PHONY: all test cover clean
 
-export HOME = $(shell pwd)
+ifndef ($(HOME))
+    export HOME = /tmp
+endif
+
+DIR = src/envx_counters
 
 all:
 
 test:
-	$(MAKE) -C golang $@
+	cd $(DIR) && go test -v -race -coverprofile=../.cover.out
 	$(MAKE) -C tests -j1
 
-fmt:
-	$(MAKE) -C golang $@
+cover: test
+	cd $(DIR) && go tool cover -html=../.cover.out
 
 clean:
-	$(MAKE) -C golang $@
+	rm -f src/.cover.out
 	$(MAKE) -C tests $@

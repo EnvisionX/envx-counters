@@ -1,7 +1,7 @@
 .PHONY: all server clean
 
 CLI = ../bin/envx-counters-cli
-export GOPATH = $(shell pwd)/../golang
+export GOPATH = $(shell pwd)/..
 
 all: server races
 

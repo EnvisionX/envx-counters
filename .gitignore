@@ -1,3 +1,4 @@
 *~
 debian/envx-erlang-counters.install
 *.swp
+.cover.out
